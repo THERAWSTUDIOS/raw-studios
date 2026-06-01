@@ -4,118 +4,319 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#0a0a0a; color:#fff; font-family:'Segoe UI',sans-serif; }
-    header { background:#111; border-bottom:1px solid #FA8112; padding:1rem 2rem;
-             display:flex; justify-content:space-between; align-items:center; }
-    header h1 { color:#FA8112; font-size:1.2rem; letter-spacing:2px; }
-    nav a { color:#aaa; text-decoration:none; margin-left:1rem; font-size:.85rem; }
-    nav a:hover { color:#FA8112; }
-    .main { padding:2rem; max-width:1100px; margin:0 auto; }
-    h2 { color:#FA8112; margin-bottom:1.5rem; }
-    .btn { padding:.5rem 1rem; border:none; border-radius:6px; cursor:pointer; font-size:.85rem; }
-    .btn-primary { background:#FA8112; color:#000; font-weight:700; }
-    .btn-danger { background:#c0392b; color:#fff; }
-    .btn-sm { padding:.35rem .7rem; font-size:.8rem; }
-    .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1rem; margin-top:1rem; }
-    .card { background:#111; border:1px solid #222; border-radius:10px; padding:1.2rem; }
-    .card img { width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid #FA8112; }
-    .card h3 { color:#FA8112; margin-top:.7rem; font-size:1rem; }
-    .card p { color:#888; font-size:.8rem; margin:.3rem 0 .8rem; }
-    .card-actions { display:flex; gap:.5rem; }
-    .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:100;
-                align-items:center; justify-content:center; }
-    .modal-bg.open { display:flex; }
-    .modal { background:#111; border:1px solid #FA8112; border-radius:12px; padding:2rem;
-             width:100%; max-width:460px; }
-    .modal h3 { color:#FA8112; margin-bottom:1.2rem; }
-    label { display:block; color:#aaa; font-size:.8rem; margin-bottom:.3rem; margin-top:.8rem; }
-    input, textarea { width:100%; padding:.65rem .9rem; background:#1a1a1a; border:1px solid #333;
-                      border-radius:6px; color:#fff; font-size:.9rem; }
-    input:focus, textarea:focus { outline:none; border-color:#FA8112; }
-    .modal-footer { margin-top:1.5rem; display:flex; gap:.75rem; justify-content:flex-end; }
-    .cancel-btn { background:#333; color:#fff; padding:.6rem 1.2rem; border:none; border-radius:6px; cursor:pointer; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh}
+    header{background:#111;border-bottom:1px solid #FA8112;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    header h1{color:#FA8112;font-size:1.2rem;letter-spacing:2px}
+    nav a{color:#aaa;text-decoration:none;margin-left:1rem;font-size:.85rem}
+    nav a:hover{color:#FA8112}
+    .main{padding:2rem;max-width:1100px;margin:0 auto}
+    h2{color:#FA8112;margin-bottom:1.5rem}
+    .btn{padding:.5rem 1rem;border:none;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:600}
+    .btn-primary{background:#FA8112;color:#000}
+    .btn-danger{background:#c0392b;color:#fff}
+    .btn-sm{padding:.35rem .75rem;font-size:.8rem}
+    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem;margin-top:1rem}
+    .card{background:#111;border:1px solid #222;border-radius:12px;padding:1.2rem;display:flex;flex-direction:column;gap:.75rem}
+    .card-top{display:flex;gap:1rem;align-items:center}
+    .card-img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid #FA8112;flex-shrink:0;background:#1a1a1a}
+    .card-info h3{color:#FA8112;font-size:1rem;margin-bottom:.2rem}
+    .card-info .role{color:#888;font-size:.8rem}
+    .card-tags{display:flex;flex-wrap:wrap;gap:.4rem}
+    .chip{background:rgba(250,129,18,.12);color:#FA8112;border:1px solid rgba(250,129,18,.3);border-radius:50px;padding:2px 10px;font-size:.75rem}
+    .card-exp{color:#aaa;font-size:.8rem}
+    .card-bio{color:#888;font-size:.82rem;line-height:1.5}
+    .card-actions{display:flex;gap:.6rem;margin-top:.25rem}
+
+    /* Modal */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:center;justify-content:center;padding:1rem}
+    .modal-bg.open{display:flex}
+    .modal{background:#111;border:1px solid #FA8112;border-radius:14px;padding:2rem;width:100%;max-width:520px;max-height:92vh;overflow-y:auto}
+    .modal h3{color:#FA8112;margin-bottom:1.4rem;font-size:1.1rem}
+    .field{margin-bottom:1rem}
+    .field label{display:block;color:#aaa;font-size:.8rem;margin-bottom:.4rem}
+    .field input,.field textarea{width:100%;padding:.7rem .9rem;background:#1a1a1a;border:1px solid #333;border-radius:7px;color:#fff;font-size:.9rem;font-family:inherit}
+    .field input:focus,.field textarea:focus{outline:none;border-color:#FA8112}
+
+    /* Tag chips editor */
+    .tags-editor{background:#1a1a1a;border:1px solid #333;border-radius:7px;padding:.5rem .7rem;display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;cursor:text;min-height:42px}
+    .tags-editor:focus-within{border-color:#FA8112}
+    .tag-chip{display:flex;align-items:center;gap:.3rem;background:rgba(250,129,18,.15);border:1px solid rgba(250,129,18,.35);color:#FA8112;border-radius:50px;padding:2px 10px 2px 12px;font-size:.78rem}
+    .tag-chip button{background:none;border:none;color:#FA8112;cursor:pointer;font-size:.9rem;line-height:1;padding:0;margin-left:2px}
+    .tag-chip button:hover{color:#fff}
+    .tag-input{background:none;border:none;outline:none;color:#fff;font-size:.85rem;min-width:80px;flex:1}
+
+    /* Drag-drop image */
+    .drop-zone{border:2px dashed #333;border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:.2s;position:relative}
+    .drop-zone:hover,.drop-zone.drag-over{border-color:#FA8112;background:rgba(250,129,18,.04)}
+    .drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .drop-zone .dz-icon{font-size:2rem;color:#555;margin-bottom:.5rem}
+    .drop-zone .dz-text{color:#888;font-size:.85rem}
+    .drop-zone .dz-text span{color:#FA8112}
+    .preview-wrap{margin-top:.75rem;display:none;align-items:center;gap:.75rem}
+    .preview-wrap.show{display:flex}
+    .preview-img{width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid #FA8112}
+    .preview-name{color:#aaa;font-size:.82rem;flex:1}
+    .preview-remove{background:none;border:none;color:#c0392b;cursor:pointer;font-size:1.1rem}
+    .upload-progress{height:3px;background:#FA8112;width:0;border-radius:2px;margin-top:.5rem;transition:width .3s}
+
+    .modal-footer{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem}
+    .btn-cancel{background:#333;color:#fff;padding:.65rem 1.3rem;border:none;border-radius:7px;cursor:pointer}
+
+    .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#FA8112;color:#000;padding:.75rem 1.25rem;border-radius:8px;font-weight:600;font-size:.9rem;display:none;z-index:999}
+    .toast.show{display:block}
   </style>
 </head>
 <body>
-  <header>
-    <h1>TRS ADMIN — Teachers</h1>
-    <nav>
-      <a href="/admin">Dashboard</a>
-      <a href="/admin/courses">Courses</a>
-      <a href="/admin/gallery">Gallery</a>
-      <a href="/admin/logout">Logout</a>
-    </nav>
-  </header>
-  <div class="main">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-      <h2>Manage Teachers (<%= teachers.length %>)</h2>
-      <button class="btn btn-primary" onclick="openAdd()">+ Add Teacher</button>
-    </div>
-    <div class="cards">
-      <% teachers.forEach(t => { %>
-      <div class="card">
-        <% if(t.image) { %><img src="<%= t.image %>" alt="<%= t.name %>"><% } %>
-        <h3><%= t.name %></h3>
-        <p><strong style="color:#FA8112"><%= t.role %></strong><br><%= t.bio %></p>
-        <div class="card-actions">
-          <button class="btn btn-sm btn-primary" onclick='openEdit(<%= JSON.stringify(t) %>)'>Edit</button>
-          <form method="POST" action="/admin/teachers/<%= t.id %>/delete" style="display:inline;"
-                onsubmit="return confirm('Delete this teacher?')">
-            <button class="btn btn-sm btn-danger">Delete</button>
-          </form>
+<header>
+  <h1>TRS ADMIN — Teachers</h1>
+  <nav>
+    <a href="/admin">Dashboard</a>
+    <a href="/admin/courses">Courses</a>
+    <a href="/admin/gallery">Gallery</a>
+    <a href="/admin/logout">Logout</a>
+  </nav>
+</header>
+
+<div class="main">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h2>Manage Teachers (<%= teachers.length %>)</h2>
+    <button class="btn btn-primary" onclick="openModal()">+ Add Teacher</button>
+  </div>
+
+  <div class="cards">
+    <% teachers.forEach(t => { %>
+    <div class="card">
+      <div class="card-top">
+        <% if(t.image){ %><img src="<%= t.image %>" class="card-img" alt="<%= t.name %>" onerror="this.src=''"><% } else { %><div class="card-img" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#FA8112"><%= t.name.charAt(0) %></div><% } %>
+        <div class="card-info">
+          <h3><%= t.name %></h3>
+          <div class="role"><%= t.role %></div>
         </div>
       </div>
-      <% }) %>
+      <% if(t.tags){ %>
+      <div class="card-tags">
+        <% t.tags.split(',').map(s=>s.trim()).filter(Boolean).forEach(tag=>{ %>
+        <span class="chip"><%= tag %></span>
+        <% }) %>
+      </div>
+      <% } %>
+      <div class="card-exp">🏆 <%= t.experience %></div>
+      <div class="card-bio"><%= t.bio %></div>
+      <div class="card-actions">
+        <button class="btn btn-sm btn-primary" onclick='openModal(<%= JSON.stringify(t) %>)'>Edit</button>
+        <form method="POST" action="/admin/teachers/<%= t.id %>/delete" style="display:inline" onsubmit="return confirm('Delete <%= t.name %>?')">
+          <button class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </div>
     </div>
+    <% }) %>
   </div>
+</div>
 
-  <div class="modal-bg" id="addModal">
-    <div class="modal">
-      <h3>Add Teacher</h3>
-      <form method="POST" action="/admin/teachers">
-        <label>Full Name</label><input name="name" required>
-        <label>Role / Instrument</label><input name="role" required>
-        <label>Bio (short)</label><textarea name="bio" rows="3"></textarea>
-        <label>Image URL</label><input name="image">
-        <div class="modal-footer">
-          <button type="button" class="cancel-btn" onclick="closeAdd()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Add Teacher</button>
+<!-- Add/Edit Modal -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h3 id="modal-title">Add Teacher</h3>
+    <form id="teacherForm" method="POST" action="/admin/teachers">
+
+      <div class="field">
+        <label>Full Name</label>
+        <input id="f_name" name="name" required placeholder="e.g. Rounak Singh">
+      </div>
+
+      <div class="field">
+        <label>Role / Title</label>
+        <input id="f_role" name="role" placeholder="e.g. Founder & Lead Instructor">
+      </div>
+
+      <div class="field">
+        <label>Specialisations (press Enter or comma to add)</label>
+        <div class="tags-editor" id="tagsEditor" onclick="document.getElementById('tagInput').focus()">
+          <!-- chips injected here -->
+          <input id="tagInput" class="tag-input" placeholder="e.g. Guitar">
         </div>
-      </form>
-    </div>
-  </div>
+        <input type="hidden" id="f_tags" name="tags">
+      </div>
 
-  <div class="modal-bg" id="editModal">
-    <div class="modal">
-      <h3>Edit Teacher</h3>
-      <form id="editForm" method="POST">
-        <label>Full Name</label><input id="e_name" name="name" required>
-        <label>Role / Instrument</label><input id="e_role" name="role" required>
-        <label>Bio</label><textarea id="e_bio" name="bio" rows="3"></textarea>
-        <label>Image URL</label><input id="e_image" name="image">
-        <div class="modal-footer">
-          <button type="button" class="cancel-btn" onclick="closeEdit()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save</button>
+      <div class="field">
+        <label>Experience</label>
+        <input id="f_experience" name="experience" placeholder="e.g. 12+ Years Experience">
+      </div>
+
+      <div class="field">
+        <label>Bio</label>
+        <textarea id="f_bio" name="bio" rows="3" placeholder="Short description about the teacher..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Photo</label>
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this.files[0])">
+          <div class="dz-icon">📷</div>
+          <div class="dz-text">Drag & drop photo here or <span>browse</span></div>
+          <div class="dz-text" style="margin-top:.3rem;font-size:.75rem">JPG, PNG, WEBP — max 5MB</div>
         </div>
-      </form>
-    </div>
-  </div>
+        <div class="upload-progress" id="uploadProgress"></div>
+        <div class="preview-wrap" id="previewWrap">
+          <img class="preview-img" id="previewImg" src="" alt="">
+          <span class="preview-name" id="previewName"></span>
+          <button type="button" class="preview-remove" onclick="clearImage()" title="Remove">✕</button>
+        </div>
+        <input type="hidden" id="f_image" name="image">
+      </div>
 
-  <script>
-    function openAdd() { document.getElementById('addModal').classList.add('open'); }
-    function closeAdd() { document.getElementById('addModal').classList.remove('open'); }
-    function openEdit(t) {
-      document.getElementById('editForm').action = '/admin/teachers/' + t.id + '/update';
-      document.getElementById('e_name').value = t.name;
-      document.getElementById('e_role').value = t.role;
-      document.getElementById('e_bio').value = t.bio || '';
-      document.getElementById('e_image').value = t.image || '';
-      document.getElementById('editModal').classList.add('open');
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="submitBtn">Save Teacher</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── Tag chips ─────────────────────────────────────────────
+  let tags = [];
+
+  function renderTags() {
+    const editor = document.getElementById('tagsEditor');
+    const input  = document.getElementById('tagInput');
+    editor.querySelectorAll('.tag-chip').forEach(el => el.remove());
+    tags.forEach((tag, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'tag-chip';
+      chip.innerHTML = `${tag} <button type="button" onclick="removeTag(${i})">×</button>`;
+      editor.insertBefore(chip, input);
+    });
+    document.getElementById('f_tags').value = tags.join(',');
+  }
+
+  function addTag(val) {
+    const v = val.trim().replace(/,$/, '');
+    if (v && !tags.includes(v)) { tags.push(v); renderTags(); }
+  }
+
+  function removeTag(i) { tags.splice(i, 1); renderTags(); }
+
+  document.getElementById('tagInput').addEventListener('keydown', e => {
+    const v = e.target.value;
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      addTag(v);
+      e.target.value = '';
+    } else if (e.key === 'Backspace' && !v && tags.length) {
+      tags.pop(); renderTags();
     }
-    function closeEdit() { document.getElementById('editModal').classList.remove('open'); }
-    document.getElementById('addModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeAdd(); });
-    document.getElementById('editModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeEdit(); });
-  </script>
+  });
+  document.getElementById('tagInput').addEventListener('blur', e => {
+    if (e.target.value.trim()) { addTag(e.target.value); e.target.value = ''; }
+  });
+
+  // ── Drag & drop ───────────────────────────────────────────
+  const dropZone = document.getElementById('dropZone');
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) handleFile(f);
+  });
+
+  async function handleFile(file) {
+    if (!file) return;
+    const progress = document.getElementById('uploadProgress');
+    const preview  = document.getElementById('previewWrap');
+    const previewImg = document.getElementById('previewImg');
+    const previewName = document.getElementById('previewName');
+
+    // Show local preview immediately
+    previewImg.src = URL.createObjectURL(file);
+    document.getElementById('previewName').textContent = file.name;
+    preview.classList.add('show');
+
+    // Upload to Supabase via server
+    progress.style.width = '30%';
+    const fd = new FormData();
+    fd.append('image', file);
+    try {
+      const res  = await fetch('/admin/upload/teacher-image', { method: 'POST', body: fd });
+      const data = await res.json();
+      progress.style.width = '100%';
+      setTimeout(() => progress.style.width = '0', 600);
+      if (data.url) {
+        document.getElementById('f_image').value = data.url;
+        previewImg.src = data.url;
+        showToast('Photo uploaded ✓');
+      } else {
+        showToast('Upload failed: ' + (data.error || 'Unknown error'));
+        clearImage();
+      }
+    } catch(err) {
+      progress.style.width = '0';
+      showToast('Upload error: ' + err.message);
+    }
+  }
+
+  function clearImage() {
+    document.getElementById('f_image').value = '';
+    document.getElementById('previewWrap').classList.remove('show');
+    document.getElementById('previewImg').src = '';
+    document.getElementById('fileInput').value = '';
+  }
+
+  // ── Modal ─────────────────────────────────────────────────
+  function openModal(t) {
+    tags = [];
+    document.getElementById('modal-title').textContent = t ? 'Edit Teacher' : 'Add Teacher';
+    document.getElementById('f_name').value       = t?.name       || '';
+    document.getElementById('f_role').value       = t?.role       || '';
+    document.getElementById('f_experience').value = t?.experience || '';
+    document.getElementById('f_bio').value        = t?.bio        || '';
+    document.getElementById('f_image').value      = t?.image      || '';
+
+    // Populate tags
+    if (t?.tags) t.tags.split(',').map(s=>s.trim()).filter(Boolean).forEach(addTag);
+    else renderTags();
+
+    // Set image preview
+    if (t?.image) {
+      document.getElementById('previewImg').src = t.image;
+      document.getElementById('previewName').textContent = 'Current photo';
+      document.getElementById('previewWrap').classList.add('show');
+    } else {
+      clearImage();
+    }
+
+    const form = document.getElementById('teacherForm');
+    form.action = t ? `/admin/teachers/${t.id}/update` : '/admin/teachers';
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+  }
+
+  document.getElementById('modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
+  // Sync tags hidden input before submit
+  document.getElementById('teacherForm').addEventListener('submit', () => {
+    if (document.getElementById('tagInput').value.trim()) {
+      addTag(document.getElementById('tagInput').value);
+      document.getElementById('tagInput').value = '';
+    }
+    document.getElementById('f_tags').value = tags.join(',');
+  });
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
 </body>
 </html>

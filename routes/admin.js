@@ -1,8 +1,25 @@
 const express  = require('express');
 const bcrypt   = require('bcryptjs');
+const multer   = require('multer');
 const router   = express.Router();
 const { requireAdmin, signToken } = require('../lib/auth');
 const { getSupabase } = require('../lib/supabase');
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
+
+// ── Image upload → Supabase Storage ──────────────────────────
+router.post('/admin/upload/teacher-image', requireAdmin, upload.single('image'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file received' });
+  const ext  = req.file.originalname.split('.').pop().toLowerCase();
+  const name = `teacher-${Date.now()}.${ext}`;
+  const sb   = getSupabase();
+  const { error } = await sb.storage.from('teacher-images').upload(name, req.file.buffer, {
+    contentType: req.file.mimetype, upsert: true
+  });
+  if (error) return res.status(500).json({ error: error.message });
+  const { data } = sb.storage.from('teacher-images').getPublicUrl(name);
+  res.json({ url: data.publicUrl });
+});
 
 // ── Login page ────────────────────────────────────────────────
 router.get('/trstestrounak', (req, res) => {
