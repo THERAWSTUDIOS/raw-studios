@@ -1,31 +1,26 @@
 <%- include('partials/head', {title}) %>
 <%- include('partials/navbar') %>
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
 <!-- ══════════════════════════════════════════════
      HERO SECTION
 ═══════════════════════════════════════════════ -->
 <section class="hero-section" id="hero-section">
-  <!-- Floating orbs for parallax depth -->
   <div class="float-orb orb-1"></div>
   <div class="float-orb orb-2"></div>
   <div class="float-orb orb-3"></div>
-  <!-- Animated aurora background -->
   <div class="hero-bg-aurora"></div>
-  <!-- Floating notes & staff container -->
   <div class="hero-particles" id="heroParticles"></div>
-  <!-- Floating staff notations -->
   <div class="staff-layer" id="heroStaffLayer"></div>
 
   <div class="hero-content container text-center">
     <div class="hero-badge gsap-fade-up" data-delay="0">
-      <i class="fa-solid fa-location-dot me-2"></i>Zirakpur's Premier Music Academy
+      <i class="fa-solid fa-location-dot me-2"></i>Tri-City's Premier Music Academy
     </div>
-
-    <!-- hero-brand-wrap ensures Great Vibes descenders are never clipped -->
     <div class="hero-brand-wrap">
-      <h1 class="hero-brand gsap-brand">The Raw Studios</h1>
+      <h1 class="hero-brand gsap-brand" style=font-family:Oswald;text-transform: capitalize; >THE RAW STUDIOS</h1>
     </div>
-
     <h2 class="hero-title gsap-fade-up" data-delay="0.3">
       Discover Your <span class="text-gradient">Musical &amp; Dance</span> Journey
     </h2>
@@ -48,22 +43,12 @@
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════
-     SECTION DIVIDER
-═══════════════════════════════════════════════ -->
-<div class="section-divider">
-  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0,0 C480,60 960,0 1440,60 L1440,0 L0,0 Z" fill="#F5E7C6"/>
-  </svg>
-</div>
 
 <!-- ══════════════════════════════════════════════
      OUR COURSES — PREVIEW
 ═══════════════════════════════════════════════ -->
-<section class="trs-section courses-preview-section" id="courses-preview" style="background:var(--bg1); position:relative; overflow:hidden;">
-  <!-- Subtle horizontal staff lines in bg -->
-  <div class="staff-layer" id="coursesStaffLayer" style="opacity:0.4"></div>
-
+<section class="trs-section courses-preview-section" id="courses-preview" style="background:#FFFFFF; position:relative; overflow:hidden;">
+  <div class="staff-layer" id="coursesStaffLayer" style="opacity:0.3"></div>
   <div class="container" style="position:relative; z-index:1;">
     <div class="section-header text-center">
       <span class="section-tag gsap-reveal">Our Courses</span>
@@ -71,13 +56,17 @@
       <p class="section-subtitle gsap-reveal">Comprehensive music and dance programs designed to nurture your artistic growth at every level.</p>
     </div>
 
-    <h3 class="subsection-label gsap-reveal"><i class="fa-solid fa-music me-2"></i>Musical Classes</h3>
+    <h3 class="subsection-label gsap-reveal"><i class="fa-solid fa-music me-2"></i>Featured Classes</h3>
 
     <div class="row g-4 courses-grid">
       <% courses.forEach((course, i) => { %>
       <div class="col-sm-6 col-lg-3 gsap-card" data-index="<%= i %>">
         <div class="course-card" style="--card-color: <%= course.color %>">
           <div class="course-card-glow"></div>
+          <div class="course-card-img-wrap">
+            <img src="<%= course.image %>" alt="<%= course.title %>" class="course-card-img" loading="lazy"
+                 onerror="this.style.display='none'"/>
+          </div>
           <div class="course-icon-wrap">
             <i class="fa-solid <%= course.icon %>"></i>
           </div>
@@ -102,11 +91,11 @@
 </section>
 
 <!-- ══════════════════════════════════════════════
-     INSTRUCTORS SECTION
+     INSTRUCTORS SECTION — 4 Teachers
 ═══════════════════════════════════════════════ -->
-<section class="trs-section instructors-section" id="instructors" style="background:var(--bg0);position:relative;overflow:hidden;">
-  <div class="staff-layer" id="instructorsStaffLayer" style="opacity:0.3"></div>
-  <div class="container" style="position:relative;z-index:1;">
+<section class="trs-section instructors-section" id="instructors" style="background:#F8F8F8; position:relative; overflow:hidden;">
+  <div class="staff-layer" id="instructorsStaffLayer" style="opacity:0.2"></div>
+  <div class="container" style="position:relative; z-index:1;">
     <div class="section-header text-center">
       <span class="section-tag gsap-reveal">The Team</span>
       <h2 class="section-title gsap-reveal">Meet Our <span class="text-gradient">Instructors</span></h2>
@@ -114,80 +103,218 @@
     </div>
 
     <div class="row g-4 justify-content-center">
-      <!-- Rounak -->
-      <div class="col-sm-6 col-lg-4 gsap-instructor" data-dir="left">
+      <!-- Rounak Sir -->
+      <div class="col-sm-6 col-lg-3 gsap-instructor" data-dir="left">
         <div class="instructor-card">
-          <div class="instructor-avatar" style="--av-bg: linear-gradient(135deg, #1a3a5a, #3a6a9a)">
-            <span>R</span>
-            <div class="av-ring"></div>
-          </div>
-          <div class="instructor-body">
-            <h3 class="instructor-name">Rounak</h3>
-            <div class="instructor-tags">
-              <span class="itag">Singing</span>
-              <span class="itag">Guitar</span>
-              <span class="itag">Piano</span>
+          <div class="instructor-photo-frame">
+            <div class="instructor-photo-inner">
+              <img src="/images/bprounak.PNG" alt="Rounak Sir" class="instructor-photo"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
+              <div class="instructor-photo-initial">R</div>
             </div>
-            <div class="instructor-exp">
-              <i class="fa-solid fa-award me-2"></i>12+ years Experience
-            </div>
-            <p class="instructor-bio">Classical excellence and contemporary innovation in every lesson. Founder of The Raw Studios and touring musician.</p>
-            <a href="/contact" class="btn btn-book-lesson btn-magnetic">
-              <i class="fa-solid fa-calendar-plus me-2"></i>Book Lesson
-            </a>
+            <div class="instructor-photo-ring"></div>
           </div>
+          <h3 class="instructor-name">Rounak Singh</h3>
+          <div class="instructor-tags">
+            <span class="itag">Singing</span>
+            <span class="itag">Guitar</span>
+            <span class="itag">Piano</span>
+          </div>
+          <div class="instructor-exp">
+            <i class="fa-solid fa-award"></i>12+ Years Experience
+          </div>
+          <p class="instructor-bio">Classical excellence and contemporary innovation in every lesson. Founder of The Raw Studios and touring musician.</p>
+          <a href="/contact" class="btn btn-book-lesson btn-magnetic">
+            <i class="fa-solid fa-calendar-plus me-2"></i>Book Lesson
+          </a>
         </div>
       </div>
 
-      <!-- Lakshay -->
-      <div class="col-sm-6 col-lg-4 gsap-instructor" data-dir="up">
+      <!-- Lakshay Sir -->
+      <div class="col-sm-6 col-lg-3 gsap-instructor" data-dir="up">
+        <div class="instructor-card">
+          <div class="instructor-photo-frame">
+            <div class="instructor-photo-inner">
+              <img src="/images/laksh-sir.jpg" alt="Lakshay Sir" class="instructor-photo"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
+              <div class="instructor-photo-initial">L</div>
+            </div>
+            <div class="instructor-photo-ring"></div>
+          </div>
+          <h3 class="instructor-name">Lakshay</h3>
+          <div class="instructor-tags">
+            <span class="itag">Kathak</span>
+            <span class="itag">Semi-Classical</span>
+            <span class="itag">Bhangra</span>
+          </div>
+          <div class="instructor-exp">
+            <i class="fa-solid fa-award"></i>8+ Years Experience
+          </div>
+          <p class="instructor-bio">From traditional Kathak to modern choreography — bringing fire, grace, and discipline to every performance.</p>
+          <a href="/contact" class="btn btn-book-lesson btn-magnetic">
+            <i class="fa-solid fa-calendar-plus me-2"></i>Book Lesson
+          </a>
+        </div>
+      </div>
+
+      <!-- Vedant Sir — TOP RATED -->
+      <div class="col-sm-6 col-lg-3 gsap-instructor" data-dir="up">
         <div class="instructor-card featured-instructor">
-          <div class="featured-badge"><i class="fa-solid fa-crown me-1"></i> Top Rated</div>
-          <div class="instructor-avatar" style="--av-bg: linear-gradient(135deg, #2a1a4a, #6a3aa0)">
-            <span>L</span>
-            <div class="av-ring"></div>
-          </div>
-          <div class="instructor-body">
-            <h3 class="instructor-name">Lakshay</h3>
-            <div class="instructor-tags">
-              <span class="itag">Kathak</span>
-              <span class="itag">Semi-Classical</span>
-              <span class="itag">Bhangra</span>
+          <div class="featured-badge"><i class="fa-solid fa-crown me-1"></i>Top Rated</div>
+          <div class="instructor-photo-frame">
+            <div class="instructor-photo-inner">
+              <img src="/images/bpvedant.jpeg" alt="Vedant Sareen" class="instructor-photo"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
+              <div class="instructor-photo-initial">V</div>
             </div>
-            <div class="instructor-exp">
-              <i class="fa-solid fa-award me-2"></i>8+ years Experience
-            </div>
-            <p class="instructor-bio">From traditional Kathak to modern choreography — bringing fire, grace, and discipline to every performance.</p>
-            <a href="/contact" class="btn btn-book-lesson btn-magnetic">
-              <i class="fa-solid fa-calendar-plus me-2"></i>Book Lesson
-            </a>
+            <div class="instructor-photo-ring"></div>
           </div>
+          <h3 class="instructor-name">Vedant</h3>
+          <div class="instructor-tags">
+            <span class="itag">Flute</span>
+            <span class="itag">Sitar</span>
+            <span class="itag">Violin</span>
+          </div>
+          <div class="instructor-exp">
+            <i class="fa-solid fa-award"></i>7+ Years Experience
+          </div>
+          <p class="instructor-bio">Master of Indian and Western classical instruments. Brings deep musical knowledge to every guided session.</p>
+          <a href="/contact" class="btn btn-book-lesson btn-magnetic">
+            <i class="fa-solid fa-calendar-plus me-2"></i>Book Lesson
+          </a>
         </div>
       </div>
 
-      <!-- Vedant -->
-      <div class="col-sm-6 col-lg-4 gsap-instructor" data-dir="right">
+      <!-- Monika Mam — NEW (Yoga Teacher) -->
+      <div class="col-sm-6 col-lg-3 gsap-instructor" data-dir="right">
         <div class="instructor-card">
-          <div class="instructor-avatar" style="--av-bg: linear-gradient(135deg, #0a3a30, #1a7a62)">
-            <span>V</span>
-            <div class="av-ring"></div>
-          </div>
-          <div class="instructor-body">
-            <h3 class="instructor-name">Vedant</h3>
-            <div class="instructor-tags">
-              <span class="itag">Flute</span>
-              <span class="itag">Sitar</span>
-              <span class="itag">Violin</span>
+          <div class="new-badge"><i class="fa-solid fa-sparkles me-1"></i>New</div>
+          <div class="instructor-photo-frame">
+            <div class="instructor-photo-inner">
+              <img src="/images/monaika-mam.jpg" alt="Monika Mam" class="instructor-photo"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
+              <div class="instructor-photo-initial">M</div>
             </div>
-            <div class="instructor-exp">
-              <i class="fa-solid fa-award me-2"></i>7+ years Experience
-            </div>
-            <p class="instructor-bio">Master of Indian and Western classical instruments. Brings deep musical knowledge to every guided session.</p>
-            <a href="/contact" class="btn btn-book-lesson btn-magnetic">
-              <i class="fa-solid fa-calendar-plus me-2"></i>Book Lesson
-            </a>
+            <div class="instructor-photo-ring"></div>
           </div>
+          <h3 class="instructor-name">Monika</h3>
+          <div class="instructor-tags">
+            <span class="itag">Yoga</span>
+            <span class="itag">Wellness</span>
+            <span class="itag">Mindfulness</span>
+          </div>
+          <div class="instructor-exp">
+            <i class="fa-solid fa-award"></i>5+ Years Experience
+          </div>
+          <p class="instructor-bio">Certified yoga instructor bringing balance, mindfulness, and holistic wellness to students of all levels.</p>
+          <a href="/contact" class="btn btn-book-lesson btn-magnetic">
+            <i class="fa-solid fa-calendar-plus me-2"></i>Book Lesson
+          </a>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     IMAGE GALLERY — 20-Image Collage
+═══════════════════════════════════════════════ -->
+<section class="trs-section gallery-section" id="gallery">
+  <div class="container">
+    <div class="section-header text-center">
+      <span class="section-tag gsap-reveal">Our Moments</span>
+      <h2 class="section-title gsap-reveal">Studio <span class="text-gradient">Gallery</span></h2>
+      <p class="section-subtitle gsap-reveal">Glimpses of our performances, classes, and studio life at The Raw Studios.</p>
+    </div>
+
+    <div class="gallery-collage gsap-reveal">
+      <div class="gallery-item gi-big">
+        <img src="/images/col.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col2.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item gi-tall">
+        <img src="/images/col3.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col4.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col5.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item gi-wide">
+        <img src="/images/col6.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col7.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col8.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item gi-wide">
+        <img src="/images/col9.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item gi-tall">
+        <img src="/images/col10.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col11.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col12.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col13.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item gi-big">
+        <img src="/images/col14.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col15.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item gi-wide">
+        <img src="/images/col16.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col17.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col18.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item gi-tall">
+        <img src="/images/col19.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col20.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item gi-wide">
+        <img src="/images/col21.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="/images/col22.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
       </div>
     </div>
   </div>
@@ -198,17 +325,16 @@
 ═══════════════════════════════════════════════ -->
 <section class="stats-section" id="stats-section">
   <div class="stats-bg-pattern"></div>
-  <!-- Horizontal staff lines as visual texture -->
   <div class="stats-staff-deco" id="statsStaff">
     <svg width="100%" height="60" viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <line x1="0" y1="10" x2="1440" y2="10" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
-      <line x1="0" y1="22" x2="1440" y2="22" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
-      <line x1="0" y1="34" x2="1440" y2="34" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
-      <line x1="0" y1="46" x2="1440" y2="46" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
-      <line x1="0" y1="58" x2="1440" y2="58" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+      <line x1="0" y1="10" x2="1440" y2="10" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+      <line x1="0" y1="22" x2="1440" y2="22" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+      <line x1="0" y1="34" x2="1440" y2="34" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+      <line x1="0" y1="46" x2="1440" y2="46" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+      <line x1="0" y1="58" x2="1440" y2="58" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
     </svg>
   </div>
-  <div class="container" style="position:relative;z-index:1;">
+  <div class="container" style="position:relative; z-index:1;">
     <div class="row g-4 justify-content-center">
       <div class="col-6 col-md-3 gsap-stat">
         <div class="stat-card">
@@ -243,12 +369,11 @@
 </section>
 
 <!-- ══════════════════════════════════════════════
-     GOOGLE REVIEWS — Non-overlapping nav layout
+     GOOGLE REVIEWS
 ═══════════════════════════════════════════════ -->
-<section class="trs-section reviews-section" id="reviews-section" style="position:relative;overflow:hidden;">
-  <!-- Floating staff notation background -->
-  <div class="staff-layer" id="reviewsStaffLayer" style="opacity:0.35"></div>
-  <div class="container" style="position:relative;z-index:1;">
+<section class="trs-section reviews-section" id="reviews-section" style="position:relative; overflow:hidden;">
+  <div class="staff-layer" id="reviewsStaffLayer" style="opacity:0.25"></div>
+  <div class="container" style="position:relative; z-index:1;">
     <div class="section-header text-center">
       <span class="section-tag gsap-reveal">Testimonials</span>
       <h2 class="section-title gsap-reveal">Student <span class="text-gradient">Success Stories</span></h2>
@@ -265,7 +390,6 @@
       </div>
     </div>
 
-    <!-- Outer wrapper: swiper + [prev][pagination][next] row below -->
     <div class="reviews-swiper-outer gsap-reveal">
       <div class="swiper reviews-swiper">
         <div class="swiper-wrapper">
@@ -274,9 +398,7 @@
             <div class="review-card">
               <div class="review-quote-icon"><i class="fa-solid fa-quote-left"></i></div>
               <div class="review-stars">
-                <% for(let i = 0; i < review.rating; i++) { %>
-                  <i class="fa-solid fa-star"></i>
-                <% } %>
+                <% for(let i = 0; i < review.rating; i++) { %><i class="fa-solid fa-star"></i><% } %>
               </div>
               <p class="review-text">"<%= review.text %>"</p>
               <div class="review-author">
@@ -292,7 +414,6 @@
           <% }) %>
         </div>
       </div>
-      <!-- Nav row: prev · pagination dots · next — never overlaps swiper -->
       <div class="reviews-nav-row">
         <button class="swiper-nav-btn reviews-prev" aria-label="Previous review">
           <i class="fa-solid fa-chevron-left"></i>
@@ -313,15 +434,12 @@
 ═══════════════════════════════════════════════ -->
 <section class="cta-banner gsap-reveal">
   <div class="cta-banner-glow"></div>
-  <!-- Staff lines decoration -->
   <div class="cta-staff-lines" aria-hidden="true">
-    <div class="cta-staff-line"></div>
-    <div class="cta-staff-line"></div>
-    <div class="cta-staff-line"></div>
-    <div class="cta-staff-line"></div>
+    <div class="cta-staff-line"></div><div class="cta-staff-line"></div>
+    <div class="cta-staff-line"></div><div class="cta-staff-line"></div>
     <div class="cta-staff-line"></div>
   </div>
-  <div class="container text-center" style="position:relative;z-index:1;">
+  <div class="container text-center" style="position:relative; z-index:1;">
     <h2 class="cta-title">Ready to Start Your <span class="text-gradient">Journey?</span></h2>
     <p class="cta-subtitle">Join hundreds of students who have discovered their passion at The Raw Studios.</p>
     <div class="cta-actions">

@@ -75,31 +75,3 @@
 </section>
 
 <%- include('partials/footer') %>
-
-<script>
-  // Course filter tabs
-  document.addEventListener('DOMContentLoaded', () => {
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const courseItems = document.querySelectorAll('.course-item');
-
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        const filter = btn.dataset.filter;
-        courseItems.forEach(item => {
-          const show = filter === 'all' || item.dataset.category === filter;
-          if (show) {
-            gsap.to(item, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.2)', display: 'block' });
-          } else {
-            gsap.to(item, {
-              opacity: 0, scale: 0.8, duration: 0.3, ease: 'power2.in',
-              onComplete: () => { item.style.display = 'none'; }
-            });
-          }
-        });
-      });
-    });
-  });
-</script>

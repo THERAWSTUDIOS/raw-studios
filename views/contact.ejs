@@ -77,11 +77,6 @@
             <i class="fa-solid fa-circle-check me-2"></i><%= success %>
           </div>
           <% } %>
-          <% if (error) { %>
-          <div class="alert trs-alert-error" role="alert">
-            <i class="fa-solid fa-circle-exclamation me-2"></i><%= error %>
-          </div>
-          <% } %>
 
           <form action="/contact" method="POST" class="contact-form" id="contactForm" novalidate>
             <div class="row g-4">
@@ -150,23 +145,3 @@
 </section>
 
 <%- include('partials/footer') %>
-
-<script>
-  // Form submit animation
-  document.getElementById('contactForm')?.addEventListener('submit', function() {
-    const btn = this.querySelector('.btn-submit-big');
-    btn.querySelector('.btn-text').style.display = 'none';
-    btn.querySelector('.btn-loading').style.display = 'inline';
-    btn.disabled = true;
-  });
-
-  // Input focus animations
-  document.querySelectorAll('.trs-input-field').forEach(input => {
-    input.addEventListener('focus', () => {
-      gsap.to(input.closest('.trs-input-wrap'), { borderColor: 'rgba(78, 168, 243, 0.8)', duration: 0.3 });
-    });
-    input.addEventListener('blur', () => {
-      gsap.to(input.closest('.trs-input-wrap'), { borderColor: 'rgba(100, 150, 255, 0.15)', duration: 0.3 });
-    });
-  });
-</script>

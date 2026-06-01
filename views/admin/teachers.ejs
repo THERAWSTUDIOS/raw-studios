@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0a0a0a; color:#fff; font-family:'Segoe UI',sans-serif; }
+    header { background:#111; border-bottom:1px solid #FA8112; padding:1rem 2rem;
+             display:flex; justify-content:space-between; align-items:center; }
+    header h1 { color:#FA8112; font-size:1.2rem; letter-spacing:2px; }
+    nav a { color:#aaa; text-decoration:none; margin-left:1rem; font-size:.85rem; }
+    nav a:hover { color:#FA8112; }
+    .main { padding:2rem; max-width:1100px; margin:0 auto; }
+    h2 { color:#FA8112; margin-bottom:1.5rem; }
+    .btn { padding:.5rem 1rem; border:none; border-radius:6px; cursor:pointer; font-size:.85rem; }
+    .btn-primary { background:#FA8112; color:#000; font-weight:700; }
+    .btn-danger { background:#c0392b; color:#fff; }
+    .btn-sm { padding:.35rem .7rem; font-size:.8rem; }
+    .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1rem; margin-top:1rem; }
+    .card { background:#111; border:1px solid #222; border-radius:10px; padding:1.2rem; }
+    .card img { width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid #FA8112; }
+    .card h3 { color:#FA8112; margin-top:.7rem; font-size:1rem; }
+    .card p { color:#888; font-size:.8rem; margin:.3rem 0 .8rem; }
+    .card-actions { display:flex; gap:.5rem; }
+    .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:100;
+                align-items:center; justify-content:center; }
+    .modal-bg.open { display:flex; }
+    .modal { background:#111; border:1px solid #FA8112; border-radius:12px; padding:2rem;
+             width:100%; max-width:460px; }
+    .modal h3 { color:#FA8112; margin-bottom:1.2rem; }
+    label { display:block; color:#aaa; font-size:.8rem; margin-bottom:.3rem; margin-top:.8rem; }
+    input, textarea { width:100%; padding:.65rem .9rem; background:#1a1a1a; border:1px solid #333;
+                      border-radius:6px; color:#fff; font-size:.9rem; }
+    input:focus, textarea:focus { outline:none; border-color:#FA8112; }
+    .modal-footer { margin-top:1.5rem; display:flex; gap:.75rem; justify-content:flex-end; }
+    .cancel-btn { background:#333; color:#fff; padding:.6rem 1.2rem; border:none; border-radius:6px; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>TRS ADMIN — Teachers</h1>
+    <nav>
+      <a href="/admin">Dashboard</a>
+      <a href="/admin/courses">Courses</a>
+      <a href="/admin/gallery">Gallery</a>
+      <a href="/admin/logout">Logout</a>
+    </nav>
+  </header>
+  <div class="main">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h2>Manage Teachers (<%= teachers.length %>)</h2>
+      <button class="btn btn-primary" onclick="openAdd()">+ Add Teacher</button>
+    </div>
+    <div class="cards">
+      <% teachers.forEach(t => { %>
+      <div class="card">
+        <% if(t.image) { %><img src="<%= t.image %>" alt="<%= t.name %>"><% } %>
+        <h3><%= t.name %></h3>
+        <p><strong style="color:#FA8112"><%= t.role %></strong><br><%= t.bio %></p>
+        <div class="card-actions">
+          <button class="btn btn-sm btn-primary" onclick='openEdit(<%= JSON.stringify(t) %>)'>Edit</button>
+          <form method="POST" action="/admin/teachers/<%= t.id %>/delete" style="display:inline;"
+                onsubmit="return confirm('Delete this teacher?')">
+            <button class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <div class="modal-bg" id="addModal">
+    <div class="modal">
+      <h3>Add Teacher</h3>
+      <form method="POST" action="/admin/teachers">
+        <label>Full Name</label><input name="name" required>
+        <label>Role / Instrument</label><input name="role" required>
+        <label>Bio (short)</label><textarea name="bio" rows="3"></textarea>
+        <label>Image URL</label><input name="image">
+        <div class="modal-footer">
+          <button type="button" class="cancel-btn" onclick="closeAdd()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Teacher</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-bg" id="editModal">
+    <div class="modal">
+      <h3>Edit Teacher</h3>
+      <form id="editForm" method="POST">
+        <label>Full Name</label><input id="e_name" name="name" required>
+        <label>Role / Instrument</label><input id="e_role" name="role" required>
+        <label>Bio</label><textarea id="e_bio" name="bio" rows="3"></textarea>
+        <label>Image URL</label><input id="e_image" name="image">
+        <div class="modal-footer">
+          <button type="button" class="cancel-btn" onclick="closeEdit()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openAdd() { document.getElementById('addModal').classList.add('open'); }
+    function closeAdd() { document.getElementById('addModal').classList.remove('open'); }
+    function openEdit(t) {
+      document.getElementById('editForm').action = '/admin/teachers/' + t.id + '/update';
+      document.getElementById('e_name').value = t.name;
+      document.getElementById('e_role').value = t.role;
+      document.getElementById('e_bio').value = t.bio || '';
+      document.getElementById('e_image').value = t.image || '';
+      document.getElementById('editModal').classList.add('open');
+    }
+    function closeEdit() { document.getElementById('editModal').classList.remove('open'); }
+    document.getElementById('addModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeAdd(); });
+    document.getElementById('editModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeEdit(); });
+  </script>
+</body>
+</html>

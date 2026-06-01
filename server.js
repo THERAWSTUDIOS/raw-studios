@@ -1,19 +1,24 @@
 require('dotenv').config();
-const express  = require('express');
-const path     = require('path');
-const axios    = require('axios');
-const nodemailer = require('nodemailer');
-const fs       = require('fs');
+const express      = require('express');
+const path         = require('path');
+const axios        = require('axios');
+const fs           = require('fs');
+const cookieParser = require('cookie-parser');
+const adminRoutes  = require('./routes/admin');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-// Static files — images go in public/images/courses/, public/images/, etc.
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// ─── Admin routes (/trstestrounak, /admin/*) ─────────────────
+app.use(adminRoutes);
 
 // ─── Reviews cache (5-min TTL) ──────────────────────────────
 let reviewsCache   = null;
@@ -144,27 +149,24 @@ async function fetchGoogleReviews() {
 // ─── Data ─────────────────────────────────────────────────────
 // Course images should be placed at public/images/courses/<filename>.jpg
 const coursesData = [
-  { id:1,  title:'Singing Classes',  instructor:'Rounak Sir',  category:'music', icon:'fa-microphone',    price:'₹2,499', desc:'Learn classical and modern vocal techniques from expert trainers.',                     image:'/images/courses/singing.jpg'   },
-  { id:2,  title:'Guitar Classes',   instructor:'Rounak Sir',  category:'music', icon:'fa-guitar',        price:'₹2,499', desc:'Master acoustic and electric guitar with structured lessons.',                         image:'/images/courses/guitar.jpg'    },
-  { id:3,  title:'Piano Classes',    instructor:'Rounak Sir',  category:'music', icon:'fa-music',         price:'₹2,499', desc:'Build strong piano skills with classical & modern training.',                         image:'/images/courses/piano.jpg'     },
-  { id:4,  title:'Flute Classes',    instructor:'Vedant Sir',  category:'music', icon:'fa-wind',          price:'₹2,499', desc:'Explore the art of flute with guided professional instruction.',                      image:'/images/courses/flute.jpg'     },
-  { id:5,  title:'Drums',            instructor:'Vedant Sir',  category:'music', icon:'fa-drum',          price:'₹2,499', desc:'Master rhythm and beats with dynamic drum lessons.',                                  image:'/images/courses/drums.jpg'     },
-  { id:6,  title:'Cajon / Clapbox',  instructor:'Vedant Sir',  category:'music', icon:'fa-box',           price:'₹2,499', desc:'Percussive groove and hand drum techniques.',                                        image:'/images/courses/cajon.jpg'     },
-  { id:7,  title:'Violin',           instructor:'Vedant Sir',  category:'music', icon:'fa-sliders',       price:'₹2,499', desc:'Master the strings with classical & contemporary violin lessons.',                    image:'/images/courses/violin.jpg'    },
-  { id:8,  title:'Sitar',            instructor:'Vedant Sir',  category:'music', icon:'fa-circle-nodes',  price:'₹2,499', desc:'Explore the depth of Indian classical music through sitar.',                         image:'/images/courses/sitar.jpg'     },
-  { id:9,  title:'Western Dance',    instructor:'Lakshay Sir', category:'dance', icon:'fa-person-walking',price:'₹2,499', desc:'Urban dance styles and creative choreography.',                                       image:'/images/courses/western-dance.jpg' },
-  { id:10, title:'Classical Dance',  instructor:'Lakshay Sir', category:'dance', icon:'fa-star',          price:'₹2,499', desc:'Traditional Indian dance forms and graceful expressions.',                           image:'/images/courses/kathak.jpg'    },
-  { id:11, title:'Bhangra Classes',  instructor:'Lakshay Sir', category:'dance', icon:'fa-fire',          price:'₹2,499', desc:'High-energy folk dance and rhythmic movements.',                                     image:'/images/courses/bhangra.jpg'   },
-  { id:12, title:'Yoga',             instructor:'Lakshay Sir', category:'dance', icon:'fa-spa',           price:'₹24,999',desc:'Balance your mind and body through strength and flow.',                              image:'/images/courses/yoga.jpg'      },
+  { id:1,  title:'Singing Classes',  instructor:'Rounak Sir',  category:'music', icon:'fa-microphone',    price:'₹2,499', desc:'Learn classical and modern vocal techniques from expert trainers.',                     image:'/images/courses/singing.jpg'       },
+  { id:2,  title:'Guitar Classes',   instructor:'Rounak Sir',  category:'music', icon:'fa-guitar',        price:'₹2,499', desc:'Master acoustic and electric guitar with structured lessons.',                         image:'/images/courses/guitar.jpg'        },
+  { id:3,  title:'Piano Classes',    instructor:'Rounak Sir',  category:'music', icon:'fa-music',         price:'₹2,499', desc:'Build strong piano skills with classical & modern training.',                         image:'/images/courses/piano.jpg'         },
+  { id:4,  title:'Flute Classes',    instructor:'Vedant Sir',  category:'music', icon:'fa-wind',          price:'₹2,499', desc:'Explore the art of flute with guided professional instruction.',                      image:'/images/courses/flute.jpg'         },
+  { id:5,  title:'Drums',            instructor:'Vedant Sir',  category:'music', icon:'fa-drum',          price:'₹2,499', desc:'Master rhythm and beats with dynamic drum lessons.',                                  image:'/images/courses/drums.jpg'         },
+  { id:6,  title:'Clapbox Classes',   instructor:'Vedant Sir',  category:'music', icon:'fa-box',           price:'₹2,499', desc:'Percussive groove and hand drum techniques.',                                        image:'/images/courses/clapbox.jpg'       },
+  { id:7,  title:'Violin',           instructor:'Vedant Sir',  category:'music', icon:'fa-sliders',       price:'₹2,499', desc:'Master the strings with classical & contemporary violin lessons.',                    image:'/images/courses/violin.jpg'        },
+  { id:8,  title:'Sitar',            instructor:'Vedant Sir',  category:'music', icon:'fa-circle-nodes',  price:'₹2,499', desc:'Explore the depth of Indian classical music through sitar.',                         image:'/images/courses/sitar.jpg'         },
+  { id:9,  title:'Classical Dance',  instructor:'Lakshay Sir', category:'dance', icon:'fa-star',          price:'₹2,499', desc:'Traditional Indian dance forms and graceful expressions.',                           image:'/images/courses/classicaldance.jpg'},
+  { id:10, title:'Bhangra Classes',  instructor:'Lakshay Sir', category:'dance', icon:'fa-fire',          price:'₹2,499', desc:'High-energy folk dance and rhythmic movements.',                                     image:'/images/courses/bhangra.jpg'       },
+  { id:11, title:'Western Dance',    instructor:'Lakshay Sir', category:'dance', icon:'fa-person-walking',price:'₹2,499', desc:'Urban dance styles and creative choreography.',                                       image:'/images/courses/western-dance.jpg' },
+  { id:12, title:'Yoga',             instructor:'Monika',      category:'dance', icon:'fa-spa',           price:'₹2,499', desc:'Balance your mind and body through strength and flow.',                              image:'/images/courses/yoga.jpg'          },
 ];
 
 const labelVideos = [
-  { id:'dQw4w9WgXcQ', title:'Live Performance — Annual Concert 2024', artist:'The Raw Studios'    },
-  { id:'9bZkp7q19f0', title:'Classical Kathak Showcase',              artist:'Lakshay & Students' },
-  { id:'JGwWNGJdvx8', title:'Sitar Recital — Vedant Sareen',          artist:'Vedant Sareen'      },
-  { id:'kXYiU_JCYtU', title:'Guitar & Vocals Jam Session',            artist:'Rounak Singh'       },
-  { id:'60ItHLz5WEA', title:'Bhangra Fever — Batch Performance',      artist:'Dance Department'   },
-  { id:'hT_nvWreIhg', title:'Student Recital — Piano & Flute',        artist:'Various Students'   },
+  { id:'d2bU-zANIH8', title:'Baat Itni Si Hai |Love is Feeling| Official Song | Rounak Singh | Sobia Kaur | Raw Studios', artist:'Rounak Singh ft. Sobia Kaur', type:'recorded' },
+  { id:'2VraEY8XMdw', title:'Superstar ( Full song) Rounak Singh',                                                       artist:'Rounak Singh',               type:'recorded' },
+  { id:'KnWLEZc0hQc', title:'Rounak Singh : Chal Ud Challiye | Lets Fly | Ft Yasmeen | Latest Song | Official Video',    artist:'Rounak Singh ft. Yasmeen',   type:'recorded' },
 ];
 
 // ─── Routes ───────────────────────────────────────────────────
@@ -182,7 +184,11 @@ app.get('/courses', (req, res) => {
   res.render('courses', { title:'Our Courses — The Raw Studios', courses: coursesData });
 });
 app.get('/label', (req, res) => {
-  res.render('label', { title:'Label & Performances — The Raw Studios', videos: labelVideos });
+  res.render('label', {
+    title: 'Label & Performances — The Raw Studios',
+    liveVideos:     labelVideos.filter(v => v.type === 'live'),
+    recordedVideos: labelVideos.filter(v => v.type === 'recorded'),
+  });
 });
 app.get('/about', async (req, res) => {
   const reviews = await fetchGoogleReviews();
@@ -209,23 +215,8 @@ app.get('/api/reviews', async (req, res) => {
   res.json({ count: reviews.length, live: isLive(), reviews });
 });
 
-app.post('/contact', async (req, res) => {
-  const { firstName, phone, email, message } = req.body;
-  if (!firstName || !phone || !email) {
-    return res.render('contact', { title:'Contact Us — The Raw Studios', success:null, error:'Please fill all required fields.' });
-  }
-  try {
-    const transporter = nodemailer.createTransport({ service:'gmail', auth:{ user:process.env.EMAIL_USER, pass:process.env.EMAIL_PASS } });
-    await transporter.sendMail({
-      from: `"${firstName}" <${process.env.EMAIL_USER}>`,
-      to:   process.env.EMAIL_TO,
-      subject: `New Enquiry from ${firstName} — The Raw Studios`,
-      html: `<h2>New Contact Submission</h2><p><b>Name:</b> ${firstName}</p><p><b>Phone:</b> ${phone}</p><p><b>Email:</b> ${email}</p><p><b>Message:</b> ${message||'—'}</p>`
-    });
-    res.render('contact', { title:'Contact Us — The Raw Studios', success:"Message sent! We'll get back to you soon.", error:null });
-  } catch {
-    res.render('contact', { title:'Contact Us — The Raw Studios', success:null, error:'Could not send message. Please call us directly.' });
-  }
+app.post('/contact', (req, res) => {
+  res.render('contact', { title:'Contact Us — The Raw Studios', success:"We received your enquiry! Our team will reach out to you on WhatsApp shortly.", error:null });
 });
 
 app.listen(PORT, () => console.log(`🎵 The Raw Studios → http://localhost:${PORT}`));

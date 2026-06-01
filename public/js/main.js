@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
-   THE RAW STUDIOS — main.js  v4  (Funky Warm Light Edition)
-   GSAP · Swiper · Musical Vibe Interactions
+   THE RAW STUDIOS — main.js  v5  (White/Black/Orange Theme)
+   GSAP · Swiper · Musical Interactions
 ═══════════════════════════════════════════════════════════════ */
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
@@ -20,40 +20,67 @@ function makeStaffSVG() {
     yOpts[Math.floor(Math.random()*5)]
   ];
   return `<svg viewBox="0 0 200 65" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-    <line x1="22" y1="13" x2="200" y2="13" stroke="currentColor" stroke-width="0.85" opacity="0.75"/>
-    <line x1="22" y1="22" x2="200" y2="22" stroke="currentColor" stroke-width="0.85" opacity="0.75"/>
-    <line x1="22" y1="31" x2="200" y2="31" stroke="currentColor" stroke-width="0.85" opacity="0.75"/>
-    <line x1="22" y1="40" x2="200" y2="40" stroke="currentColor" stroke-width="0.85" opacity="0.75"/>
-    <line x1="22" y1="49" x2="200" y2="49" stroke="currentColor" stroke-width="0.85" opacity="0.75"/>
-    <line x1="22" y1="13" x2="22" y2="49" stroke="currentColor" stroke-width="1.8" opacity="0.75"/>
-    <text x="0"   y="51" font-family="serif" font-size="46" fill="currentColor" opacity="0.95">${clef}</text>
+    <line x1="22" y1="13" x2="200" y2="13" stroke="currentColor" stroke-width="0.85" opacity="0.70"/>
+    <line x1="22" y1="22" x2="200" y2="22" stroke="currentColor" stroke-width="0.85" opacity="0.70"/>
+    <line x1="22" y1="31" x2="200" y2="31" stroke="currentColor" stroke-width="0.85" opacity="0.70"/>
+    <line x1="22" y1="40" x2="200" y2="40" stroke="currentColor" stroke-width="0.85" opacity="0.70"/>
+    <line x1="22" y1="49" x2="200" y2="49" stroke="currentColor" stroke-width="0.85" opacity="0.70"/>
+    <line x1="22" y1="13" x2="22" y2="49" stroke="currentColor" stroke-width="1.8" opacity="0.70"/>
+    <text x="0"   y="51" font-family="serif" font-size="46" fill="currentColor" opacity="0.90">${clef}</text>
     <text x="65"  y="${ys[0]}" font-family="serif" font-size="17" fill="currentColor">${pick()}</text>
     <text x="110" y="${ys[1]}" font-family="serif" font-size="15" fill="currentColor">${pick()}</text>
     <text x="152" y="${ys[2]}" font-family="serif" font-size="17" fill="currentColor">${pick()}</text>
   </svg>`;
 }
 
-/* ── Cursor Staff SVG (spawned every 5th trail event) ────────── */
+/* ── Cursor Staff SVG ────────────────────────────────────────── */
 function makeCursorStaff() {
   const div = document.createElement('div');
   div.className = 'cursor-note';
   div.style.cssText = `display:inline-block; line-height:1;`;
   div.innerHTML = `<svg viewBox="0 0 60 28" width="60" height="28" xmlns="http://www.w3.org/2000/svg" style="display:block">
-    <line x1="8" y1="8"  x2="60" y2="8"  stroke="rgba(250,129,18,0.7)" stroke-width="0.9"/>
-    <line x1="8" y1="14" x2="60" y2="14" stroke="rgba(250,129,18,0.7)" stroke-width="0.9"/>
-    <line x1="8" y1="20" x2="60" y2="20" stroke="rgba(250,129,18,0.7)" stroke-width="0.9"/>
-    <text x="0" y="23" font-family="serif" font-size="26" fill="rgba(250,129,18,0.85)">𝄞</text>
-    <text x="30" y="${[10,16,22][Math.floor(Math.random()*3)]}" font-family="serif" font-size="12" fill="rgba(250,129,18,0.7)">♪</text>
+    <line x1="8" y1="8"  x2="60" y2="8"  stroke="rgba(255,98,0,0.7)" stroke-width="0.9"/>
+    <line x1="8" y1="14" x2="60" y2="14" stroke="rgba(255,98,0,0.7)" stroke-width="0.9"/>
+    <line x1="8" y1="20" x2="60" y2="20" stroke="rgba(255,98,0,0.7)" stroke-width="0.9"/>
+    <text x="0" y="23" font-family="serif" font-size="26" fill="rgba(255,98,0,0.85)">𝄞</text>
+    <text x="30" y="${[10,16,22][Math.floor(Math.random()*3)]}" font-family="serif" font-size="12" fill="rgba(255,98,0,0.7)">♪</text>
   </svg>`;
   return div;
 }
+
+/* ── Full-screen Page Loader ──────────────────────────────────── */
+(function setupPageLoader() {
+  const loader = document.getElementById('trs-loader');
+  if (!loader) return;
+
+  /* After 1.4s (loader animation done), fade out */
+  const hideLoader = () => {
+    gsap.to(loader, {
+      opacity: 0,
+      duration: 0.55,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        loader.style.display = 'none';
+        loader.remove();
+      }
+    });
+  };
+
+  if (document.readyState === 'complete') {
+    setTimeout(hideLoader, 200);
+  } else {
+    window.addEventListener('load', () => setTimeout(hideLoader, 200));
+    /* Fallback: force hide after 2.5s even if load event is slow */
+    setTimeout(hideLoader, 2500);
+  }
+})();
 
 /* ── Page Transition ─────────────────────────────────────────── */
 (function setupPageTransition() {
   const ov = document.createElement('div');
   ov.id = 'pageTransition';
   document.body.appendChild(ov);
-  gsap.fromTo(ov, { scaleY:1, transformOrigin:'top' }, { scaleY:0, duration:0.8, ease:'power3.inOut', delay:0.1 });
+  gsap.fromTo(ov, { scaleY:1, transformOrigin:'top' }, { scaleY:0, duration:0.7, ease:'power3.inOut', delay:0.1 });
   document.querySelectorAll('a[href]').forEach(a => {
     const h = a.getAttribute('href');
     if (!h || h.startsWith('#') || h.startsWith('tel:') || h.startsWith('mailto:') || h.startsWith('http') || a.target) return;
@@ -61,7 +88,7 @@ function makeCursorStaff() {
       if (a.type === 'submit') return;
       e.preventDefault();
       ov.style.transformOrigin = 'bottom';
-      gsap.fromTo(ov, { scaleY:0 }, { scaleY:1, duration:0.6, ease:'power3.inOut', onComplete:() => location.href = h });
+      gsap.fromTo(ov, { scaleY:0 }, { scaleY:1, duration:0.5, ease:'power3.inOut', onComplete:() => location.href = h });
     });
   });
 })();
@@ -77,7 +104,7 @@ function makeCursorStaff() {
   gsap.ticker.add(() => gsap.set(g, { x:mx, y:my }));
 })();
 
-/* ── Cursor Musical Note Trail (+ staff fragment every 5th) ──── */
+/* ── Cursor Musical Note Trail ───────────────────────────────── */
 (function setupCursorTrail() {
   if (window.innerWidth < 1024) return;
   let last = 0;
@@ -89,7 +116,6 @@ function makeCursorStaff() {
 
     let n;
     if (_cursorTrailCounter % 5 === 0) {
-      /* Every 5th event: spawn a small staff fragment */
       n = makeCursorStaff();
       n.style.left = e.clientX + 'px';
       n.style.top  = e.clientY + 'px';
@@ -108,19 +134,16 @@ function makeCursorStaff() {
   });
 })();
 
-/* ── Click Ripple — 3-note burst ─────────────────────────────── */
+/* ── Click Ripple ────────────────────────────────────────────── */
 (function setupClickRipple() {
   document.addEventListener('click', e => {
     if (e.target.closest('a,button,input,textarea,select,label')) return;
-
-    /* Main circle ripple */
     const rip = document.createElement('div');
     rip.className = 'click-ripple';
     rip.style.cssText = `left:${e.clientX}px;top:${e.clientY}px`;
     document.body.appendChild(rip);
     gsap.fromTo(rip, { scale:0, opacity:0.8 }, { scale:3, opacity:0, duration:0.8, ease:'power2.out', onComplete:() => rip.remove() });
 
-    /* 3 notes in burst at different angles */
     const angles = [-45, 0, 45];
     angles.forEach((angle, idx) => {
       const ni = document.createElement('span');
@@ -128,119 +151,96 @@ function makeCursorStaff() {
       ni.textContent = NOTE_CHARS[Math.floor(Math.random() * 5)];
       ni.style.cssText = `left:${e.clientX}px;top:${e.clientY}px;font-size:${rnd(14,22)}px`;
       document.body.appendChild(ni);
-
       const rad = (angle - 90) * Math.PI / 180;
       const dist = rnd(50, 90);
       gsap.fromTo(ni,
         { opacity:1, x:0, y:0, scale:1.2 },
-        {
-          opacity:0,
-          x: Math.cos(rad) * dist,
-          y: Math.sin(rad) * dist,
-          scale:0.5,
-          duration:0.9 + idx * 0.08,
-          ease:'power2.out',
-          delay: idx * 0.04,
-          onComplete:() => ni.remove()
-        }
+        { opacity:0, x:Math.cos(rad)*dist, y:Math.sin(rad)*dist, scale:0.5,
+          duration:0.9 + idx * 0.08, ease:'power2.out', delay:idx * 0.04, onComplete:() => ni.remove() }
       );
     });
   });
 })();
 
-/* ── Global Floating Notes (full-page backdrop) ──────────────── */
+/* ── Global Floating Notes ───────────────────────────────────── */
 (function setupGlobalNotes() {
   const layer = document.createElement('div');
   layer.id = 'globalNoteLayer';
   document.body.appendChild(layer);
-  for (let i = 0; i < 24; i++) {
+  for (let i = 0; i < 20; i++) {
     const el = document.createElement('span');
     el.textContent = NOTE_CHARS[i % NOTE_CHARS.length];
-    el.style.fontSize = rnd(10, 34) + 'px';
+    el.style.fontSize = rnd(10, 30) + 'px';
     layer.appendChild(el);
     gsap.set(el, {
-      x:        rnd(0, window.innerWidth),
-      y:        rnd(0, Math.max(document.body.scrollHeight, 2000)),
-      opacity:  0,
+      x: rnd(0, window.innerWidth),
+      y: rnd(0, Math.max(document.body.scrollHeight, 2000)),
+      opacity: 0,
       rotation: rnd(-35, 35)
     });
     gsap.to(el, {
-      y:        `-=${rnd(120, 400)}`,
-      x:        `+=${rnd(-90, 90)}`,
-      opacity:   rnd(0.03, 0.09),
+      y: `-=${rnd(120, 400)}`,
+      x: `+=${rnd(-90, 90)}`,
+      opacity: rnd(0.03, 0.08),
       rotation: `+=${rnd(-22, 22)}`,
-      duration:  rnd(14, 32),
-      repeat:   -1,
-      yoyo:     true,
-      delay:     rnd(0, 14),
-      ease:     'sine.inOut'
+      duration: rnd(14, 32),
+      repeat: -1, yoyo: true, delay: rnd(0, 14), ease:'sine.inOut'
     });
   }
 })();
 
-/* ── Staff Notation Layers (per-section animated fragments) ──── */
+/* ── Staff Notation Layers ───────────────────────────────────── */
 (function setupStaffLayers() {
   document.querySelectorAll('.staff-layer').forEach(layer => {
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 6; i++) {
       const frag = document.createElement('div');
       frag.className = 'staff-fragment';
       frag.innerHTML = makeStaffSVG();
-      const w = rnd(120, 210);
+      const w = rnd(110, 200);
       frag.style.cssText = `
         position:absolute;
         left:${rnd(-5, 92)}%;
         top:${rnd(-8, 82)}%;
         width:${w}px;
         height:${Math.round(w * 0.35)}px;
-        color:rgba(34,34,34,0.07);
+        color:rgba(0,0,0,0.06);
         pointer-events:none;
       `;
       layer.appendChild(frag);
       gsap.fromTo(frag,
-        { opacity:0,              y:rnd(18,50),    rotation:rnd(-20,20) },
-        { opacity:rnd(0.04,0.12), y:`-=${rnd(28,70)}`, rotation:`+=${rnd(-10,10)}`,
+        { opacity:0, y:rnd(18,50), rotation:rnd(-20,20) },
+        { opacity:rnd(0.04,0.10), y:`-=${rnd(28,70)}`, rotation:`+=${rnd(-10,10)}`,
           duration:rnd(10,24), repeat:-1, yoyo:true, delay:rnd(0,9), ease:'sine.inOut' }
       );
     }
   });
 })();
 
-/* ── Navbar Scroll Effect ─────────────────────────────────────── */
+/* ── Navbar Scroll Effect ────────────────────────────────────── */
 (function setupNavbar() {
   const nav = document.getElementById('mainNav');
   if (!nav) return;
   ScrollTrigger.create({
-    start: 80,
+    start: 60,
     onEnter:     () => nav.classList.add('scrolled'),
     onLeaveBack: () => nav.classList.remove('scrolled')
   });
-
-  /* Mobile toggle */
-  const toggler = nav.querySelector('.trs-toggler');
-  if (toggler) {
-    toggler.addEventListener('click', () => nav.classList.toggle('mobile-open'));
-    /* Close when a nav link is clicked */
-    nav.querySelectorAll('.trs-nav-link').forEach(l => {
-      l.addEventListener('click', () => nav.classList.remove('mobile-open'));
-    });
-  }
 })();
 
 /* ── Floating Orbs Parallax ──────────────────────────────────── */
 function setupFloatingOrbs() {
   const hero = document.getElementById('hero-section');
   if (!hero || window.innerWidth < 768) return;
-
   const orb1 = hero.querySelector('.orb-1');
   const orb2 = hero.querySelector('.orb-2');
   const orb3 = hero.querySelector('.orb-3');
   if (!orb1 || !orb2 || !orb3) return;
 
-  const q1 = gsap.quickTo(orb1, 'x', { duration:2.5, ease:'power1.out' });
+  const q1  = gsap.quickTo(orb1, 'x', { duration:2.5, ease:'power1.out' });
   const q1y = gsap.quickTo(orb1, 'y', { duration:2.5, ease:'power1.out' });
-  const q2 = gsap.quickTo(orb2, 'x', { duration:3.2, ease:'power1.out' });
+  const q2  = gsap.quickTo(orb2, 'x', { duration:3.2, ease:'power1.out' });
   const q2y = gsap.quickTo(orb2, 'y', { duration:3.2, ease:'power1.out' });
-  const q3 = gsap.quickTo(orb3, 'x', { duration:2.0, ease:'power1.out' });
+  const q3  = gsap.quickTo(orb3, 'x', { duration:2.0, ease:'power1.out' });
   const q3y = gsap.quickTo(orb3, 'y', { duration:2.0, ease:'power1.out' });
 
   document.addEventListener('mousemove', e => {
@@ -257,31 +257,26 @@ function setupFloatingOrbs() {
   const hero = document.getElementById('hero-section');
   if (!hero) return;
 
-  /* floating music notes in hero */
   const pc = document.getElementById('heroParticles');
   if (pc) {
-    for (let i = 0; i < 26; i++) {
+    for (let i = 0; i < 22; i++) {
       const n = document.createElement('span');
       n.className = 'music-note-float';
       n.textContent = NOTE_CHARS[i % NOTE_CHARS.length];
       pc.appendChild(n);
-      gsap.set(n, { x:rnd(0, window.innerWidth), y:rnd(80, window.innerHeight), fontSize:rnd(14,50), opacity:0, rotation:rnd(-35,35) });
+      gsap.set(n, { x:rnd(0, window.innerWidth), y:rnd(80, window.innerHeight), fontSize:rnd(14,48), opacity:0, rotation:rnd(-35,35) });
       gsap.to(n, {
         y:`-=${rnd(200,540)}`, x:`+=${rnd(-110,110)}`,
-        opacity:rnd(0.04,0.20), rotation:`+=${rnd(-30,30)}`,
+        opacity:rnd(0.04,0.18), rotation:`+=${rnd(-30,30)}`,
         duration:rnd(6,18), repeat:-1, yoyo:true, delay:rnd(0,10), ease:'sine.inOut'
       });
     }
   }
 
-  /* text split animation for hero title */
   setupTextSplit();
-
-  /* floating orbs parallax */
   setupFloatingOrbs();
 
-  /* main hero timeline */
-  const tl = gsap.timeline({ delay:0.3, defaults:{ ease:'power3.out' } });
+  const tl = gsap.timeline({ delay:0.35, defaults:{ ease:'power3.out' } });
   tl.to('.hero-badge',       { opacity:1, y:0, duration:0.7 })
     .to('.gsap-brand',       { opacity:1, scale:1, duration:1.1, ease:'back.out(1.5)' }, '-=0.3')
     .to('.hero-title',       { opacity:1, y:0, duration:0.8 }, '-=0.6')
@@ -289,7 +284,6 @@ function setupFloatingOrbs() {
     .to('.hero-ctas',        { opacity:1, y:0, duration:0.7 }, '-=0.4')
     .to('.hero-scroll-hint', { opacity:1, y:0, duration:0.6 }, '-=0.3');
 
-  /* mouse parallax on aurora */
   document.addEventListener('mousemove', e => {
     const cx = (e.clientX / window.innerWidth  - 0.5) * 24;
     const cy = (e.clientY / window.innerHeight - 0.5) * 14;
@@ -301,11 +295,8 @@ function setupFloatingOrbs() {
 function setupTextSplit() {
   const titleEl = document.querySelector('.hero-title');
   if (!titleEl) return;
-
-  /* Preserve inner HTML structure — only split text nodes, not span elements */
   const children = Array.from(titleEl.childNodes);
   titleEl.innerHTML = '';
-
   children.forEach(node => {
     if (node.nodeType === Node.TEXT_NODE) {
       const words = node.textContent.split(/(\s+)/);
@@ -314,31 +305,20 @@ function setupTextSplit() {
           titleEl.appendChild(document.createTextNode(word));
         } else {
           const span = document.createElement('span');
-          span.textContent = word;
           span.style.cssText = 'display:inline-block; overflow:hidden; vertical-align:bottom;';
           const inner = document.createElement('span');
           inner.textContent = word;
           inner.style.cssText = 'display:inline-block; transform:translateY(40px); opacity:0;';
-          span.innerHTML = '';
           span.appendChild(inner);
           titleEl.appendChild(span);
         }
       });
     } else {
-      /* It's an element (like .text-gradient span) — wrap its text words */
-      const el = node.cloneNode(true);
-      titleEl.appendChild(el);
+      titleEl.appendChild(node.cloneNode(true));
     }
   });
-
-  /* Animate words in on load */
   const wordInners = titleEl.querySelectorAll('span > span');
-  gsap.to(wordInners, {
-    y:0, opacity:1,
-    duration:0.65, ease:'power3.out',
-    stagger:0.09,
-    delay:0.9
-  });
+  gsap.to(wordInners, { y:0, opacity:1, duration:0.65, ease:'power3.out', stagger:0.09, delay:0.95 });
 }
 
 /* ── Horizontal Scroll Reveal ────────────────────────────────── */
@@ -346,31 +326,24 @@ function setupHorizontalScrollReveal() {
   gsap.utils.toArray('.gsap-reveal[data-dir="left"]').forEach(el => {
     gsap.fromTo(el,
       { opacity:0, x:-80 },
-      { opacity:1, x:0, duration:1, ease:'power3.out',
-        scrollTrigger:{ trigger:el, start:'top 86%', once:true } }
+      { opacity:1, x:0, duration:1, ease:'power3.out', scrollTrigger:{ trigger:el, start:'top 86%', once:true } }
     );
   });
   gsap.utils.toArray('.gsap-reveal[data-dir="right"]').forEach(el => {
     gsap.fromTo(el,
       { opacity:0, x:80 },
-      { opacity:1, x:0, duration:1, ease:'power3.out',
-        scrollTrigger:{ trigger:el, start:'top 86%', once:true } }
+      { opacity:1, x:0, duration:1, ease:'power3.out', scrollTrigger:{ trigger:el, start:'top 86%', once:true } }
     );
   });
 }
 
-/* ── Section Parallax (float orbs depth) ─────────────────────── */
+/* ── Section Parallax ────────────────────────────────────────── */
 function setupSectionParallax() {
   gsap.utils.toArray('.float-orb').forEach((orb, i) => {
     const speed = 0.3 + i * 0.12;
     gsap.to(orb, {
-      y: `-=${120 * speed}`,
-      ease:'none',
-      scrollTrigger:{
-        trigger: orb.closest('section') || document.body,
-        start:'top bottom', end:'bottom top',
-        scrub: 1.5
-      }
+      y: `-=${120 * speed}`, ease:'none',
+      scrollTrigger:{ trigger: orb.closest('section') || document.body, start:'top bottom', end:'bottom top', scrub:1.5 }
     });
   });
 }
@@ -379,20 +352,19 @@ function setupSectionParallax() {
 (function setupAboutNotes() {
   const c = document.getElementById('aboutNotes');
   if (!c) return;
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < 12; i++) {
     const n = document.createElement('span');
     n.className = 'music-note-float';
     n.textContent = NOTE_CHARS[i % 6];
     c.appendChild(n);
-    gsap.set(n, { x:rnd(0, window.innerWidth), y:rnd(0, 300), fontSize:rnd(14,38), opacity:0 });
-    gsap.to(n, { y:`-=${rnd(100,270)}`, opacity:rnd(0.05,0.18), rotation:rnd(-22,22), duration:rnd(4,10), repeat:-1, yoyo:true, delay:rnd(0,4), ease:'sine.inOut' });
+    gsap.set(n, { x:rnd(0, window.innerWidth), y:rnd(0, 300), fontSize:rnd(14,36), opacity:0 });
+    gsap.to(n, { y:`-=${rnd(100,260)}`, opacity:rnd(0.05,0.16), rotation:rnd(-22,22), duration:rnd(4,10), repeat:-1, yoyo:true, delay:rnd(0,4), ease:'sine.inOut' });
   }
 })();
 
 /* ── Scroll-Triggered Reveals ─────────────────────────────────── */
 (function setupScrollReveals() {
   gsap.utils.toArray('.gsap-reveal').forEach(el => {
-    /* Skip directional — handled separately */
     if (el.dataset.dir === 'left' || el.dataset.dir === 'right') return;
     gsap.to(el, { opacity:1, y:0, duration:0.9, ease:'power3.out', scrollTrigger:{ trigger:el, start:'top 88%', once:true } });
   });
@@ -409,7 +381,7 @@ function setupSectionParallax() {
 
   gsap.utils.toArray('.gsap-instructor').forEach(el => {
     const dir = el.dataset.dir;
-    const fv  = { opacity:0, x: dir==='left'?-60:dir==='right'?60:0, y: dir && dir!=='up'?0:40 };
+    const fv  = { opacity:0, x:dir==='left'?-60:dir==='right'?60:0, y:(!dir||dir==='up')?40:0 };
     gsap.fromTo(el, { ...fv }, { opacity:1, x:0, y:0, duration:0.9, ease:'power3.out', scrollTrigger:{ trigger:el, start:'top 88%', once:true } });
   });
 
@@ -421,43 +393,28 @@ function setupSectionParallax() {
     gsap.to(el, { opacity:1, y:0, duration:0.7, delay:i*0.08, ease:'power3.out', scrollTrigger:{ trigger:el, start:'top 95%', once:true } });
   });
 
-  /* Horizontal reveals */
   setupHorizontalScrollReveal();
 })();
 
-/* ── Stat Counter Animation ──────────────────────────────────── */
+/* ── Stat Counter ────────────────────────────────────────────── */
 (function setupCounters() {
-  setupCounterTick();
-})();
-
-function setupCounterTick() {
   document.querySelectorAll('.stat-number').forEach(el => {
     const target = parseInt(el.dataset.target || 0);
     const suffix = el.dataset.suffix || '';
-    let counted = false;
-    let lastMilestone = 0;
-
+    let counted = false, lastMilestone = 0;
     ScrollTrigger.create({ trigger:el, start:'top 85%', once:true, onEnter:() => {
       if (counted) return; counted = true;
       const obj = { val:0 };
-
       gsap.to(obj, {
-        val: target,
-        duration: 2.4,
-        ease: 'power2.out',
+        val: target, duration:2.4, ease:'power2.out',
         onUpdate: function() {
           const v = Math.ceil(obj.val);
           el.textContent = target >= 1000 ? v.toLocaleString('en-IN') + suffix : v + suffix;
-
-          /* Scale pulse on each 10% milestone */
           const pct = obj.val / target;
           const milestone = Math.floor(pct * 10);
           if (milestone > lastMilestone && milestone < 10) {
             lastMilestone = milestone;
-            gsap.fromTo(el,
-              { scale:1.18 },
-              { scale:1, duration:0.22, ease:'back.out(2)' }
-            );
+            gsap.fromTo(el, { scale:1.18 }, { scale:1, duration:0.22, ease:'back.out(2)' });
           }
         },
         onComplete: () => {
@@ -467,44 +424,26 @@ function setupCounterTick() {
       });
     }});
   });
-}
+})();
 
-/* ── 3D Card Tilt (enhanced with inner glow) ─────────────────── */
+/* ── 3D Card Tilt ────────────────────────────────────────────── */
 (function setupCardTilt() {
   if (window.innerWidth < 768) return;
   document.querySelectorAll('.course-card').forEach(card => {
-    /* Ensure we have an inner glow target */
     let innerGlow = card.querySelector('.card-inner-glow');
     if (!innerGlow) {
       innerGlow = document.createElement('div');
       innerGlow.className = 'card-inner-glow';
-      innerGlow.style.cssText = `
-        position:absolute; inset:0; border-radius:inherit;
-        pointer-events:none; z-index:0; transition:background 0.3s;
-        background:transparent;
-      `;
+      innerGlow.style.cssText = 'position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;transition:background 0.3s;background:transparent;';
       card.appendChild(innerGlow);
     }
-
     card.addEventListener('mousemove', e => {
       const r = card.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width;
       const y = (e.clientY - r.top)  / r.height;
-      const rx = (x - 0.5);
-      const ry = (y - 0.5);
-
-      gsap.to(card, {
-        rotateX: -ry * 14,
-        rotateY: rx  * 14,
-        transformPerspective: 1200,
-        duration: 0.4,
-        ease: 'power2.out'
-      });
-
-      /* Inner mouse-follow glow */
-      innerGlow.style.background = `radial-gradient(circle at ${x*100}% ${y*100}%, rgba(250,129,18,0.08), transparent 60%)`;
+      gsap.to(card, { rotateX:-(y-0.5)*14, rotateY:(x-0.5)*14, transformPerspective:1200, duration:0.4, ease:'power2.out' });
+      innerGlow.style.background = `radial-gradient(circle at ${x*100}% ${y*100}%, rgba(255,98,0,0.07), transparent 60%)`;
     });
-
     card.addEventListener('mouseleave', () => {
       gsap.to(card, { rotateX:0, rotateY:0, duration:0.6, ease:'elastic.out(1,0.5)' });
       innerGlow.style.background = 'transparent';
@@ -537,11 +476,10 @@ function setupCounterTick() {
     pagination: { el:'.reviews-pagination', clickable:true },
     navigation: { nextEl:'.reviews-next', prevEl:'.reviews-prev' },
     breakpoints: { 640:{ slidesPerView:2 }, 1024:{ slidesPerView:3 } },
-    effect: 'slide'
   });
 })();
 
-/* ── Stat Card Glow on Hover — white glow (orange bg) ───────── */
+/* ── Stat Card Glow ──────────────────────────────────────────── */
 (function setupGlowPulse() {
   gsap.utils.toArray('.stat-card').forEach(card => {
     card.addEventListener('mouseenter', () => gsap.to(card, { boxShadow:'0 20px 60px rgba(255,255,255,0.18)', duration:0.3 }));
@@ -549,26 +487,14 @@ function setupCounterTick() {
   });
 })();
 
-/* ── Instructor Avatar Ring Speed-up ─────────────────────────── */
+/* ── Instructor Photo Ring Speed-up on Hover ─────────────────── */
 (function setupAvatarHover() {
   document.querySelectorAll('.instructor-card').forEach(card => {
-    const ring = card.querySelector('.av-ring');
+    const ring = card.querySelector('.instructor-photo-ring');
     if (!ring) return;
     card.addEventListener('mouseenter', () => { ring.style.animationDuration = '0.7s'; });
     card.addEventListener('mouseleave', () => { ring.style.animationDuration = '4s'; });
   });
-})();
-
-/* ── Active Nav Highlight by Scroll Section ──────────────────── */
-(function setupActiveSectionNav() {
-  const secs = document.querySelectorAll('section[id]');
-  if (!secs.length) return;
-  const hl = id => {
-    document.querySelectorAll('.trs-nav-link').forEach(l => l.classList.remove('active'));
-    const lnk = document.querySelector(`.trs-nav-link[href="/#${id}"]`);
-    if (lnk) lnk.classList.add('active');
-  };
-  secs.forEach(s => ScrollTrigger.create({ trigger:s, start:'top 50%', end:'bottom 50%', onEnter:()=>hl(s.id), onEnterBack:()=>hl(s.id) }));
 })();
 
 /* ── CTA Banner Parallax ─────────────────────────────────────── */
@@ -580,27 +506,17 @@ function setupCounterTick() {
   });
 })();
 
-/* ── Page Load Bar ───────────────────────────────────────────── */
-(function setupLoadBar() {
-  const bar = document.createElement('div');
-  bar.id = 'pageLoader';
-  document.body.prepend(bar);
-  gsap.to(bar, { width:'100%', duration:0.6, ease:'power2.out',
-    onComplete:() => gsap.to(bar, { opacity:0, duration:0.3, delay:0.2, onComplete:()=>bar.remove() })
-  });
-})();
-
 /* ── Video Card Hover ────────────────────────────────────────── */
 (function setupVideoCardHover() {
   document.querySelectorAll('.video-card').forEach(card => {
     const ov = card.querySelector('.video-overlay');
     if (!ov) return;
-    card.addEventListener('mouseenter', () => gsap.to(ov, { background:'rgba(34,34,34,0.18)', duration:0.3 }));
-    card.addEventListener('mouseleave', () => gsap.to(ov, { background:'rgba(34,34,34,0.45)', duration:0.3 }));
+    card.addEventListener('mouseenter', () => gsap.to(ov, { background:'rgba(0,0,0,0.18)', duration:0.3 }));
+    card.addEventListener('mouseleave', () => gsap.to(ov, { background:'rgba(0,0,0,0.42)', duration:0.3 }));
   });
 })();
 
-/* ── Review Card — spawn floating note on hover ──────────────── */
+/* ── Review Card hover note ──────────────────────────────────── */
 (function setupReviewCardNotes() {
   document.querySelectorAll('.review-card').forEach(card => {
     card.addEventListener('mouseenter', () => {
@@ -615,27 +531,248 @@ function setupCounterTick() {
   });
 })();
 
-/* ── Waveform bar animation on stats section entry ───────────── */
+/* ── Waveform bars on stats section ─────────────────────────── */
 (function setupWaveformBars() {
   const section = document.querySelector('.stats-section');
   if (!section) return;
-
   const wrap = document.createElement('div');
   wrap.className = 'waveform-deco';
   wrap.setAttribute('aria-hidden', 'true');
-  for (let i = 0; i < 28; i++) {
+  for (let i = 0; i < 26; i++) {
     const b = document.createElement('div');
     b.className = 'wf-bar';
-    b.style.cssText = `--dly:${(i * 0.07).toFixed(2)}s;--h:${rnd(10,48)}px`;
+    b.style.cssText = `--dly:${(i * 0.07).toFixed(2)}s;--h:${rnd(10,46)}px`;
     wrap.appendChild(b);
   }
   section.appendChild(wrap);
 })();
 
-/* ── Section Parallax ────────────────────────────────────────── */
+/* ── Gallery item lightbox hint ──────────────────────────────── */
+(function setupGalleryHover() {
+  document.querySelectorAll('.gallery-item').forEach(item => {
+    item.addEventListener('mouseenter', () => gsap.to(item, { scale:1.02, duration:0.3, ease:'power2.out' }));
+    item.addEventListener('mouseleave', () => gsap.to(item, { scale:1, duration:0.4, ease:'power2.inOut' }));
+  });
+})();
+
+/* ── Section Parallax (on window load) ───────────────────────── */
 (function() {
   window.addEventListener('load', () => {
     setupSectionParallax();
     ScrollTrigger.refresh();
+  });
+})();
+
+/* ── Gallery Lightbox ────────────────────────────────────────── */
+(function setupGalleryLightbox() {
+  const items = Array.from(document.querySelectorAll('.gallery-item'));
+  if (!items.length) return;
+
+  const images = items.map(item => item.querySelector('img')?.src).filter(Boolean);
+  let current = 0;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'galleryLightbox';
+  overlay.innerHTML = `
+    <button class="glb-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <button class="glb-prev"  aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+    <div class="glb-img-wrap"><img class="glb-img" src="" alt="Gallery"/></div>
+    <button class="glb-next"  aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+    <div class="glb-counter"></div>
+  `;
+  document.body.appendChild(overlay);
+
+  const glbImg     = overlay.querySelector('.glb-img');
+  const glbCounter = overlay.querySelector('.glb-counter');
+
+  function showAt(idx) {
+    current = (idx + images.length) % images.length;
+    glbImg.src = images[current];
+    glbCounter.textContent = `${current + 1} / ${images.length}`;
+  }
+  function open(idx) {
+    showAt(idx);
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  items.forEach((item, idx) => item.addEventListener('click', () => open(idx)));
+  overlay.querySelector('.glb-close').addEventListener('click', close);
+  overlay.querySelector('.glb-prev').addEventListener('click', () => showAt(current - 1));
+  overlay.querySelector('.glb-next').addEventListener('click', () => showAt(current + 1));
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+  document.addEventListener('keydown', e => {
+    if (!overlay.classList.contains('active')) return;
+    if (e.key === 'Escape')     close();
+    if (e.key === 'ArrowLeft')  showAt(current - 1);
+    if (e.key === 'ArrowRight') showAt(current + 1);
+  });
+})();
+
+/* ── Contact Form input focus animations ─────────────────────── */
+(function setupContactForm() {
+  document.querySelectorAll('.trs-input-field').forEach(input => {
+    input.addEventListener('focus', () => {
+      const wrap = input.closest('.trs-input-wrap');
+      if (wrap) gsap.to(wrap, { borderColor:'rgba(255,98,0,0.70)', duration:0.3 });
+    });
+    input.addEventListener('blur', () => {
+      const wrap = input.closest('.trs-input-wrap');
+      if (wrap) gsap.to(wrap, { borderColor:'rgba(0,0,0,0.12)', duration:0.3 });
+    });
+  });
+})();
+
+/* ── Footer Form → WhatsApp ──────────────────────────────────── */
+(function setupFooterFormToWhatsApp() {
+  const form = document.getElementById('footerForm');
+  if (!form) return;
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const name  = (form.querySelector('[name="firstName"]')?.value || '').trim();
+    const phone = (form.querySelector('[name="phone"]')?.value    || '').trim();
+    const email = (form.querySelector('[name="email"]')?.value    || '').trim();
+    const msg   = (form.querySelector('[name="message"]')?.value  || '').trim();
+
+    const waText = [
+      `Hello! I found your contact from The Raw Studios website.`,
+      ``,
+      `*Name:* ${name}`,
+      `*Phone:* ${phone}`,
+      `*Email:* ${email}`,
+      msg ? `*Message:* ${msg}` : '',
+      ``,
+      `I would like to know more about your courses and timings. Please guide me!`
+    ].filter(Boolean).join('\n');
+
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Opening WhatsApp...'; }
+
+    setTimeout(() => {
+      window.open(`https://api.whatsapp.com/send/?phone=919754444450&text=${encodeURIComponent(waText)}`, '_blank', 'noopener,noreferrer');
+      form.reset();
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i> Send Message'; }
+    }, 500);
+  });
+})();
+
+/* ── Label Page: Video card click-to-play ────────────────────── */
+(function setupVideoCards() {
+  document.querySelectorAll('.video-card').forEach((card, i) => {
+    const videoId   = card.dataset.videoid;
+    const thumb     = document.getElementById('thumb-' + i);
+    const iframeWrap = document.getElementById('iframe-' + i);
+    if (!thumb || !iframeWrap || !videoId) return;
+
+    card.addEventListener('mouseenter', () => {
+      const btn = card.querySelector('.play-btn');
+      if (btn) gsap.to(btn, { scale:1.15, duration:0.3, ease:'back.out(2)' });
+    });
+    card.addEventListener('mouseleave', () => {
+      const btn = card.querySelector('.play-btn');
+      if (btn) gsap.to(btn, { scale:1, duration:0.3 });
+    });
+
+    thumb.addEventListener('click', () => {
+      gsap.to(thumb, {
+        opacity:0, scale:1.05, duration:0.3, ease:'power2.in',
+        onComplete: () => {
+          thumb.style.display = 'none';
+          iframeWrap.style.display = 'block';
+          iframeWrap.innerHTML = `<iframe
+            src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            class="video-iframe"
+          ></iframe>`;
+          gsap.from(iframeWrap, { opacity:0, scale:0.95, duration:0.4, ease:'power2.out' });
+        }
+      });
+    });
+  });
+})();
+
+/* ── Courses Page: filter tabs ───────────────────────────────── */
+(function setupCourseFilter() {
+  const filterBtns  = document.querySelectorAll('.filter-btn');
+  const courseItems = document.querySelectorAll('.course-item');
+  if (!filterBtns.length || !courseItems.length) return;
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      courseItems.forEach(item => {
+        const show = filter === 'all' || item.dataset.category === filter;
+        if (show) {
+          item.style.display = 'block';
+          gsap.to(item, { opacity:1, scale:1, duration:0.4, ease:'back.out(1.2)' });
+        } else {
+          gsap.to(item, { opacity:0, scale:0.8, duration:0.3, ease:'power2.in',
+            onComplete: () => { item.style.display = 'none'; } });
+        }
+      });
+    });
+  });
+})();
+
+/* ── Contact Form → WhatsApp redirect on submit ──────────────── */
+(function setupFormToWhatsApp() {
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const name    = (form.querySelector('[name="firstName"]')?.value || '').trim();
+    const phone   = (form.querySelector('[name="phone"]')?.value    || '').trim();
+    const email   = (form.querySelector('[name="email"]')?.value    || '').trim();
+    const course  = (form.querySelector('[name="message"]')?.value  || '').trim();
+
+    const msg = [
+      `Hello! I found your contact from The Raw Studios website.`,
+      ``,
+      `*Name:* ${name}`,
+      `*Phone:* ${phone}`,
+      `*Email:* ${email}`,
+      course ? `*Course Interested In:* ${course}` : '',
+      ``,
+      `I would like to know more about your courses and timings. Please guide me!`
+    ].filter(Boolean).join('\n');
+
+    const waURL = `https://api.whatsapp.com/send/?phone=919754444450&text=${encodeURIComponent(msg)}`;
+
+    /* Button loading animation */
+    const btn = form.querySelector('.btn-submit-big');
+    if (btn) {
+      const txt = btn.querySelector('.btn-text');
+      const ldr = btn.querySelector('.btn-loading');
+      if (txt) txt.style.display = 'none';
+      if (ldr) ldr.style.display = 'inline';
+      btn.disabled = true;
+    }
+
+    /* Brief delay so user sees the animation, then open WhatsApp */
+    setTimeout(() => {
+      window.open(waURL, '_blank', 'noopener,noreferrer');
+      /* Re-enable button after opening */
+      if (btn) {
+        setTimeout(() => {
+          const txt = btn.querySelector('.btn-text');
+          const ldr = btn.querySelector('.btn-loading');
+          if (txt) txt.style.display = 'inline';
+          if (ldr) ldr.style.display = 'none';
+          btn.disabled = false;
+        }, 1500);
+      }
+    }, 600);
   });
 })();

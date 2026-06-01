@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /trstestrounak
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://www.therawstudios.com/sitemap.xml
