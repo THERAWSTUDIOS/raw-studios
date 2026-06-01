@@ -118,6 +118,7 @@
             <div class="instructor-photo-ring"></div>
           </div>
           <h3 class="instructor-name"><%= t.name %></h3>
+          <% if (t.role) { %><p class="instructor-role"><%= t.role %></p><% } %>
           <div class="instructor-tags">
             <% t.tagsArray.forEach(tag => { %><span class="itag"><%= tag %></span><% }); %>
           </div>

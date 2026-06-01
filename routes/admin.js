@@ -109,16 +109,16 @@ router.get('/admin/teachers', requireAdmin, async (req, res) => {
 });
 
 router.post('/admin/teachers', requireAdmin, async (req, res) => {
-  const { name, role, bio, image } = req.body;
+  const { name, role, tags, experience, bio, image } = req.body;
   const sb = getSupabase();
-  await sb.from('teachers').insert([{ name, role, bio, image }]);
+  await sb.from('teachers').insert([{ name, role, tags, experience, bio, image }]);
   res.redirect('/admin/teachers');
 });
 
 router.post('/admin/teachers/:id/update', requireAdmin, async (req, res) => {
-  const { name, role, bio, image } = req.body;
+  const { name, role, tags, experience, bio, image } = req.body;
   const sb = getSupabase();
-  await sb.from('teachers').update({ name, role, bio, image }).eq('id', req.params.id);
+  await sb.from('teachers').update({ name, role, tags, experience, bio, image }).eq('id', req.params.id);
   res.redirect('/admin/teachers');
 });
 
