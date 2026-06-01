@@ -1,0 +1,27 @@
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">The Raw Studios</div>
+    <div class="name">Admin Panel</div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="/admin" class="nav-item <%= page==='dashboard'?'active':'' %>">
+      <span class="icon">⊞</span> Dashboard
+    </a>
+    <a href="/admin/courses" class="nav-item <%= page==='courses'?'active':'' %>">
+      <span class="icon">🎓</span> Courses
+    </a>
+    <a href="/admin/teachers" class="nav-item <%= page==='teachers'?'active':'' %>">
+      <span class="icon">👤</span> Teachers
+    </a>
+    <a href="/admin/gallery" class="nav-item <%= page==='gallery'?'active':'' %>">
+      <span class="icon">🖼</span> Gallery
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="admin-pill">
+      <div class="admin-avatar"><%= admin.username.charAt(0).toUpperCase() %></div>
+      <span class="admin-name"><%= admin.username %></span>
+    </div>
+    <a href="/admin/logout" class="logout-btn">↩ Logout</a>
+  </div>
+</aside>

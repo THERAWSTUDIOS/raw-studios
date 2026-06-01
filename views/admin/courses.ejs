@@ -1,145 +1,115 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %></title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#0a0a0a; color:#fff; font-family:'Segoe UI',sans-serif; }
-    header { background:#111; border-bottom:1px solid #FA8112; padding:1rem 2rem;
-             display:flex; justify-content:space-between; align-items:center; }
-    header h1 { color:#FA8112; font-size:1.2rem; letter-spacing:2px; }
-    nav a { color:#aaa; text-decoration:none; margin-left:1rem; font-size:.85rem; }
-    nav a:hover { color:#FA8112; }
-    .main { padding:2rem; max-width:1100px; margin:0 auto; }
-    h2 { color:#FA8112; margin-bottom:1.5rem; }
-    .btn { padding:.5rem 1rem; border:none; border-radius:6px; cursor:pointer; font-size:.85rem; }
-    .btn-primary { background:#FA8112; color:#000; font-weight:700; }
-    .btn-danger { background:#c0392b; color:#fff; }
-    .btn-sm { padding:.35rem .7rem; font-size:.8rem; }
-    table { width:100%; border-collapse:collapse; margin-top:1rem; }
-    th { background:#1a1a1a; color:#FA8112; padding:.75rem 1rem; text-align:left; font-size:.85rem; }
-    td { padding:.75rem 1rem; border-bottom:1px solid #1e1e1e; font-size:.85rem; vertical-align:middle; }
-    tr:hover td { background:#111; }
-    .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:100;
-                align-items:center; justify-content:center; }
-    .modal-bg.open { display:flex; }
-    .modal { background:#111; border:1px solid #FA8112; border-radius:12px; padding:2rem;
-             width:100%; max-width:500px; max-height:90vh; overflow-y:auto; }
-    .modal h3 { color:#FA8112; margin-bottom:1.2rem; }
-    label { display:block; color:#aaa; font-size:.8rem; margin-bottom:.3rem; margin-top:.8rem; }
-    input, select, textarea { width:100%; padding:.65rem .9rem; background:#1a1a1a; border:1px solid #333;
-                border-radius:6px; color:#fff; font-size:.9rem; }
-    input:focus, select:focus, textarea:focus { outline:none; border-color:#FA8112; }
-    .modal-footer { margin-top:1.5rem; display:flex; gap:.75rem; justify-content:flex-end; }
-    .cancel-btn { background:#333; color:#fff; padding:.6rem 1.2rem; border:none; border-radius:6px; cursor:pointer; }
-  </style>
-</head>
+<!DOCTYPE html><html lang="en"><head><%- include('partials/head',{title}) %></head>
 <body>
-  <header>
-    <h1>TRS ADMIN — Courses</h1>
-    <nav>
-      <a href="/admin">Dashboard</a>
-      <a href="/admin/teachers">Teachers</a>
-      <a href="/admin/gallery">Gallery</a>
-      <a href="/admin/logout">Logout</a>
-    </nav>
-  </header>
-  <div class="main">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-      <h2>Manage Courses (<%= courses.length %>)</h2>
-      <button class="btn btn-primary" onclick="openAdd()">+ Add Course</button>
+<%- include('partials/sidebar',{page:'courses',admin}) %>
+<div class="admin-main">
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+    <div>
+      <h1>Courses</h1>
+      <p><%= courses.length %> courses on the website</p>
     </div>
-    <table>
-      <thead>
-        <tr><th>Title</th><th>Instructor</th><th>Category</th><th>Price</th><th>Actions</th></tr>
-      </thead>
-      <tbody>
-        <% courses.forEach(c => { %>
-        <tr>
-          <td><%= c.title %></td>
-          <td><%= c.instructor %></td>
-          <td><%= c.category %></td>
-          <td><%= c.price %></td>
-          <td>
-            <button class="btn btn-sm btn-primary" onclick='openEdit(<%= JSON.stringify(c) %>)'>Edit</button>
-            <form method="POST" action="/admin/courses/<%= c.id %>/delete" style="display:inline;"
-                  onsubmit="return confirm('Delete this course?')">
-              <button class="btn btn-sm btn-danger">Delete</button>
-            </form>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
+    <button class="btn btn-primary" onclick="openAdd()">+ Add Course</button>
   </div>
+  <div class="page-body">
+    <div class="g-card" style="padding:0;overflow:hidden">
+      <table class="g-table">
+        <thead><tr>
+          <th>Course</th><th>Instructor</th><th>Category</th><th>Price</th><th>Actions</th>
+        </tr></thead>
+        <tbody>
+          <% courses.forEach(c => { %>
+          <tr>
+            <td>
+              <% if(c.image){ %><img src="<%= c.image %>" style="width:36px;height:36px;object-fit:cover;border-radius:6px;margin-right:.6rem;vertical-align:middle" onerror="this.style.display='none'"><% } %>
+              <strong style="color:var(--text)"><%= c.title %></strong>
+            </td>
+            <td style="color:var(--muted)"><%= c.instructor %></td>
+            <td><span style="background:rgba(255,98,0,0.1);color:var(--orange);border-radius:50px;padding:2px 10px;font-size:.75rem;font-weight:600;text-transform:uppercase"><%= c.category %></span></td>
+            <td style="color:var(--muted)"><%= c.price %></td>
+            <td><div class="td-actions">
+              <button class="btn btn-ghost btn-sm" onclick='openEdit(<%= JSON.stringify(c) %>)'>Edit</button>
+              <form method="POST" action="/admin/courses/<%= c.id %>/delete" style="display:inline" onsubmit="return confirm('Delete «<%= c.title %>»?')">
+                <button class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </div></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
-  <!-- Add Modal -->
-  <div class="modal-bg" id="addModal">
-    <div class="modal">
-      <h3>Add New Course</h3>
-      <form method="POST" action="/admin/courses">
-        <label>Title</label><input name="title" required>
-        <label>Instructor</label><input name="instructor" required>
-        <label>Category</label>
-        <select name="category">
-          <option value="music">Music</option>
-          <option value="dance">Dance</option>
-        </select>
-        <label>Icon (FontAwesome class, e.g. fa-guitar)</label><input name="icon">
-        <label>Price (e.g. ₹2,499)</label><input name="price" value="₹2,499">
-        <label>Description</label><textarea name="desc" rows="3"></textarea>
-        <label>Image URL (e.g. /images/courses/guitar.jpg)</label><input name="image">
-        <div class="modal-footer">
-          <button type="button" class="cancel-btn" onclick="closeAdd()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Add Course</button>
+<!-- Add Modal -->
+<div class="modal-bg" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add Course</h3>
+      <button class="modal-close" onclick="document.getElementById('addModal').classList.remove('open')">×</button>
+    </div>
+    <form method="POST" action="/admin/courses">
+      <div class="two-col">
+        <div class="field"><label>Title</label><input name="title" required placeholder="e.g. Guitar Classes"></div>
+        <div class="field"><label>Instructor</label><input name="instructor" required placeholder="e.g. Rounak Singh"></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Category</label>
+          <select name="category"><option value="music">Music</option><option value="dance">Dance</option></select>
         </div>
-      </form>
-    </div>
+        <div class="field"><label>Price</label><input name="price" value="₹2,499"></div>
+      </div>
+      <div class="field"><label>Icon (FontAwesome, e.g. fa-guitar)</label><input name="icon" placeholder="fa-guitar"></div>
+      <div class="field"><label>Description</label><textarea name="description" rows="3" placeholder="Short course description..."></textarea></div>
+      <div class="field"><label>Image Path (e.g. /images/courses/guitar.jpg)</label><input name="image" placeholder="/images/courses/guitar.jpg"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="document.getElementById('addModal').classList.remove('open')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add Course</button>
+      </div>
+    </form>
   </div>
+</div>
 
-  <!-- Edit Modal -->
-  <div class="modal-bg" id="editModal">
-    <div class="modal">
+<!-- Edit Modal -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
       <h3>Edit Course</h3>
-      <form id="editForm" method="POST">
-        <label>Title</label><input id="e_title" name="title" required>
-        <label>Instructor</label><input id="e_instructor" name="instructor" required>
-        <label>Category</label>
-        <select id="e_category" name="category">
-          <option value="music">Music</option>
-          <option value="dance">Dance</option>
-        </select>
-        <label>Icon</label><input id="e_icon" name="icon">
-        <label>Price</label><input id="e_price" name="price">
-        <label>Description</label><textarea id="e_desc" name="desc" rows="3"></textarea>
-        <label>Image URL</label><input id="e_image" name="image">
-        <div class="modal-footer">
-          <button type="button" class="cancel-btn" onclick="closeEdit()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-        </div>
-      </form>
+      <button class="modal-close" onclick="document.getElementById('editModal').classList.remove('open')">×</button>
     </div>
+    <form id="editForm" method="POST">
+      <div class="two-col">
+        <div class="field"><label>Title</label><input id="e_title" name="title" required></div>
+        <div class="field"><label>Instructor</label><input id="e_instructor" name="instructor" required></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Category</label>
+          <select id="e_category" name="category"><option value="music">Music</option><option value="dance">Dance</option></select>
+        </div>
+        <div class="field"><label>Price</label><input id="e_price" name="price"></div>
+      </div>
+      <div class="field"><label>Icon</label><input id="e_icon" name="icon"></div>
+      <div class="field"><label>Description</label><textarea id="e_desc" name="description" rows="3"></textarea></div>
+      <div class="field"><label>Image Path</label><input id="e_image" name="image"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="document.getElementById('editModal').classList.remove('open')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
   </div>
+</div>
 
-  <script>
-    function openAdd() { document.getElementById('addModal').classList.add('open'); }
-    function closeAdd() { document.getElementById('addModal').classList.remove('open'); }
-    function openEdit(c) {
-      document.getElementById('editForm').action = '/admin/courses/' + c.id + '/update';
-      document.getElementById('e_title').value = c.title;
-      document.getElementById('e_instructor').value = c.instructor;
-      document.getElementById('e_category').value = c.category;
-      document.getElementById('e_icon').value = c.icon || '';
-      document.getElementById('e_price').value = c.price || '';
-      document.getElementById('e_desc').value = c.desc || '';
-      document.getElementById('e_image').value = c.image || '';
-      document.getElementById('editModal').classList.add('open');
-    }
-    function closeEdit() { document.getElementById('editModal').classList.remove('open'); }
-    document.getElementById('addModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeAdd(); });
-    document.getElementById('editModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeEdit(); });
-  </script>
-</body>
-</html>
+<script>
+function openAdd(){ document.getElementById('addModal').classList.add('open'); }
+function openEdit(c){
+  document.getElementById('editForm').action='/admin/courses/'+c.id+'/update';
+  document.getElementById('e_title').value=c.title||'';
+  document.getElementById('e_instructor').value=c.instructor||'';
+  document.getElementById('e_category').value=c.category||'music';
+  document.getElementById('e_price').value=c.price||'';
+  document.getElementById('e_icon').value=c.icon||'';
+  document.getElementById('e_desc').value=c.description||'';
+  document.getElementById('e_image').value=c.image||'';
+  document.getElementById('editModal').classList.add('open');
+}
+document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+</script>
+</body></html>

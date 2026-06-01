@@ -7,18 +7,35 @@ const { getSupabase } = require('../lib/supabase');
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
-// ── Image upload → Supabase Storage ──────────────────────────
+// ── Image uploads → Supabase Storage ─────────────────────────
+async function uploadToStorage(bucket, file) {
+  const ext  = file.originalname.split('.').pop().toLowerCase();
+  const name = `${bucket}-${Date.now()}.${ext}`;
+  const sb   = getSupabase();
+  const { error } = await sb.storage.from(bucket).upload(name, file.buffer, {
+    contentType: file.mimetype, upsert: true
+  });
+  if (error) throw error;
+  return sb.storage.from(bucket).getPublicUrl(name).data.publicUrl;
+}
+
 router.post('/admin/upload/teacher-image', requireAdmin, upload.single('image'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file received' });
-  const ext  = req.file.originalname.split('.').pop().toLowerCase();
-  const name = `teacher-${Date.now()}.${ext}`;
-  const sb   = getSupabase();
-  const { error } = await sb.storage.from('teacher-images').upload(name, req.file.buffer, {
-    contentType: req.file.mimetype, upsert: true
-  });
-  if (error) return res.status(500).json({ error: error.message });
-  const { data } = sb.storage.from('teacher-images').getPublicUrl(name);
-  res.json({ url: data.publicUrl });
+  try {
+    const url = await uploadToStorage('teacher-images', req.file);
+    res.json({ url });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+router.post('/admin/upload/gallery-image', requireAdmin, upload.single('image'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file received' });
+  try {
+    // ensure gallery bucket exists
+    const sb = getSupabase();
+    await sb.storage.createBucket('gallery-images', { public: true, fileSizeLimit: 10485760 }).catch(() => {});
+    const url = await uploadToStorage('gallery-images', req.file);
+    res.json({ url });
+  } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 // ── Login page ────────────────────────────────────────────────
@@ -82,16 +99,16 @@ router.get('/admin/courses', requireAdmin, async (req, res) => {
 });
 
 router.post('/admin/courses', requireAdmin, async (req, res) => {
-  const { title, instructor, category, icon, price, desc, image } = req.body;
+  const { title, instructor, category, icon, price, description, image } = req.body;
   const sb = getSupabase();
-  await sb.from('courses').insert([{ title, instructor, category, icon, price, desc, image }]);
+  await sb.from('courses').insert([{ title, instructor, category, icon, price, description, image }]);
   res.redirect('/admin/courses');
 });
 
 router.post('/admin/courses/:id/update', requireAdmin, async (req, res) => {
-  const { title, instructor, category, icon, price, desc, image } = req.body;
+  const { title, instructor, category, icon, price, description, image } = req.body;
   const sb = getSupabase();
-  await sb.from('courses').update({ title, instructor, category, icon, price, desc, image }).eq('id', req.params.id);
+  await sb.from('courses').update({ title, instructor, category, icon, price, description, image }).eq('id', req.params.id);
   res.redirect('/admin/courses');
 });
 
@@ -136,9 +153,9 @@ router.get('/admin/gallery', requireAdmin, async (req, res) => {
 });
 
 router.post('/admin/gallery', requireAdmin, async (req, res) => {
-  const { image_url, caption } = req.body;
+  const { image_url } = req.body;
   const sb = getSupabase();
-  await sb.from('gallery').insert([{ image_url, caption }]);
+  await sb.from('gallery').insert([{ image_url }]);
   res.redirect('/admin/gallery');
 });
 
