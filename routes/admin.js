@@ -80,12 +80,13 @@ router.get('/admin/logout', (req, res) => {
 router.get('/admin', requireAdmin, async (req, res) => {
   try {
     const sb = getSupabase();
-    const [{ count: courses }, { count: teachers }, { count: gallery }] = await Promise.all([
+    const [{ count: courses }, { count: teachers }, { count: gallery }, { count: enquiries }] = await Promise.all([
       sb.from('courses').select('*', { count: 'exact', head: true }),
       sb.from('teachers').select('*', { count: 'exact', head: true }),
       sb.from('gallery').select('*', { count: 'exact', head: true }),
+      sb.from('enquiries').select('*', { count: 'exact', head: true }).eq('is_read', false),
     ]);
-    res.render('admin/dashboard', { title: 'Admin Dashboard — TRS', admin: req.admin, courses, teachers, gallery });
+    res.render('admin/dashboard', { title: 'Admin Dashboard — TRS', admin: req.admin, courses, teachers, gallery, enquiries });
   } catch (err) {
     res.render('admin/dashboard', { title: 'Admin Dashboard — TRS', admin: req.admin, courses: 0, teachers: 0, gallery: 0 });
   }
@@ -163,6 +164,26 @@ router.post('/admin/gallery/:id/delete', requireAdmin, async (req, res) => {
   const sb = getSupabase();
   await sb.from('gallery').delete().eq('id', req.params.id);
   res.redirect('/admin/gallery');
+});
+
+// ── Enquiries ─────────────────────────────────────────────────
+router.get('/admin/enquiries', requireAdmin, async (req, res) => {
+  const sb = getSupabase();
+  const { data: enquiries } = await sb.from('enquiries').select('*').order('created_at', { ascending: false });
+  const unread = (enquiries || []).filter(e => !e.is_read).length;
+  res.render('admin/enquiries', { title: 'Enquiries — TRS', admin: req.admin, enquiries: enquiries || [], unread });
+});
+
+router.post('/admin/enquiries/:id/read', requireAdmin, async (req, res) => {
+  const sb = getSupabase();
+  await sb.from('enquiries').update({ is_read: true }).eq('id', req.params.id);
+  res.redirect('/admin/enquiries');
+});
+
+router.post('/admin/enquiries/:id/delete', requireAdmin, async (req, res) => {
+  const sb = getSupabase();
+  await sb.from('enquiries').delete().eq('id', req.params.id);
+  res.redirect('/admin/enquiries');
 });
 
 module.exports = router;
