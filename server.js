@@ -238,11 +238,16 @@ app.get('/api/reviews', async (req, res) => {
 });
 
 app.post('/contact', async (req, res) => {
-  const { name, email, phone, message, course } = req.body;
+  const { name, email, phone, course, concern, is_lead } = req.body;
+  const isLead = is_lead === '1';
   try {
-    await getSupabase().from('enquiries').insert([{ name, email, phone, message, course }]);
+    await getSupabase().from('enquiries').insert([{
+      name, email, phone, course,
+      message: concern || null,
+      is_lead: isLead
+    }]);
   } catch {}
-  res.render('contact', { title:'Contact Us — The Raw Studios', success:"We received your enquiry! Our team will reach out to you on WhatsApp shortly.", error:null });
+  res.json({ ok: true });
 });
 
 app.listen(PORT, () => console.log(`🎵 The Raw Studios → http://localhost:${PORT}`));

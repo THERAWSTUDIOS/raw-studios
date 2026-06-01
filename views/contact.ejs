@@ -72,20 +72,18 @@
           <h2 class="contact-form-title">Send a Message <span style="font-style:normal;">👍🏻</span></h2>
           <p class="contact-form-subtitle">Fill out the form below and we'll get back to you within 24 hours.</p>
 
-          <% if (success) { %>
-          <div class="alert trs-alert-success" role="alert">
-            <i class="fa-solid fa-circle-check me-2"></i><%= success %>
+          <div id="successMsg" style="display:none" class="alert trs-alert-success" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>We received your enquiry! Our team will reach out to you on WhatsApp shortly.
           </div>
-          <% } %>
 
-          <form action="/contact" method="POST" class="contact-form" id="contactForm" novalidate>
+          <form class="contact-form" id="contactForm" novalidate>
             <div class="row g-4">
               <div class="col-12">
                 <div class="trs-form-group">
-                  <label class="trs-label">First Name <span class="required">*</span></label>
+                  <label class="trs-label">Full Name <span class="required">*</span></label>
                   <div class="trs-input-wrap">
                     <i class="fa-solid fa-user input-icon"></i>
-                    <input type="text" name="firstName" class="form-control trs-input-field" placeholder="Your first name" required/>
+                    <input type="text" name="name" class="form-control trs-input-field" placeholder="Your full name" required/>
                   </div>
                 </div>
               </div>
@@ -112,7 +110,7 @@
                   <label class="trs-label">Course Interested In</label>
                   <div class="trs-input-wrap">
                     <i class="fa-solid fa-music input-icon"></i>
-                    <select name="message" class="form-control trs-input-field trs-select">
+                    <select name="course" class="form-control trs-input-field trs-select">
                       <option value="">Select a course (optional)</option>
                       <option>Singing Classes</option>
                       <option>Guitar Classes</option>
@@ -131,13 +129,111 @@
                   </div>
                 </div>
               </div>
+              <div class="col-12">
+                <div class="trs-form-group">
+                  <label class="trs-label">Your Message / Concern</label>
+                  <div class="trs-input-wrap">
+                    <i class="fa-solid fa-comment-dots input-icon" style="top:1rem;transform:none"></i>
+                    <textarea name="concern" class="form-control trs-input-field" placeholder="Tell us about your goals, questions, or any specific requirements…" rows="3" style="padding-top:.75rem;resize:vertical"></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <label class="trs-lead-checkbox" id="leadLabel">
+                  <input type="checkbox" id="confirmLead" name="is_lead"/>
+                  <span class="lead-checkbox-box"><i class="fa-solid fa-check"></i></span>
+                  <span class="lead-checkbox-text">I confirm the provided information is correct — connect me on <strong>WhatsApp</strong> instantly</span>
+                  <span class="lead-wa-badge"><i class="fa-brands fa-whatsapp"></i></span>
+                </label>
+              </div>
             </div>
 
-            <button type="submit" class="btn btn-submit-big btn-magnetic mt-4 w-100">
+            <button type="submit" class="btn btn-submit-big btn-magnetic mt-4 w-100" id="submitBtn">
               <span class="btn-text"><i class="fa-solid fa-paper-plane me-2"></i>Send Message</span>
-              <span class="btn-loading" style="display:none"><i class="fa-solid fa-spinner fa-spin me-2"></i>Sending...</span>
+              <span class="btn-loading" style="display:none"><i class="fa-solid fa-spinner fa-spin me-2"></i>Sending…</span>
             </button>
           </form>
+
+          <style>
+            .trs-lead-checkbox{display:flex;align-items:center;gap:.75rem;cursor:pointer;padding:.85rem 1.1rem;border-radius:12px;border:1.5px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);transition:.3s}
+            .trs-lead-checkbox:hover{border-color:rgba(37,211,102,0.3);background:rgba(37,211,102,0.04)}
+            .trs-lead-checkbox input{display:none}
+            .lead-checkbox-box{width:20px;height:20px;border-radius:5px;border:2px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.25s;color:#fff;font-size:.65rem}
+            .trs-lead-checkbox input:checked ~ .lead-checkbox-box{background:#25d366;border-color:#25d366}
+            .lead-checkbox-text{flex:1;font-size:.84rem;color:var(--muted);transition:.25s}
+            .trs-lead-checkbox input:checked ~ .lead-checkbox-box ~ .lead-checkbox-text{color:var(--text)}
+            .lead-wa-badge{background:rgba(37,211,102,0.12);color:#25d366;border:1px solid rgba(37,211,102,0.3);border-radius:50px;padding:3px 10px;font-size:.78rem;flex-shrink:0}
+            .lead-active{border-color:rgba(37,211,102,0.45)!important;background:rgba(37,211,102,0.06)!important}
+            .btn-submit-big{transition:background .3s,box-shadow .3s}
+            .btn-submit-wa{background:linear-gradient(135deg,#25d366,#128c7e)!important;box-shadow:0 4px 20px rgba(37,211,102,0.35)!important}
+          </style>
+          <script>
+          (function(){
+            const form    = document.getElementById('contactForm');
+            const cb      = document.getElementById('confirmLead');
+            const label   = document.getElementById('leadLabel');
+            const submitBtn = document.getElementById('submitBtn');
+            const successDiv = document.getElementById('successMsg');
+
+            cb.addEventListener('change', () => {
+              label.classList.toggle('lead-active', cb.checked);
+              submitBtn.classList.toggle('btn-submit-wa', cb.checked);
+              if(cb.checked){
+                submitBtn.querySelector('.btn-text').innerHTML = '<i class="fa-brands fa-whatsapp me-2"></i>Send & Open WhatsApp';
+              } else {
+                submitBtn.querySelector('.btn-text').innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Send Message';
+              }
+            });
+
+            form.addEventListener('submit', async (e) => {
+              e.preventDefault();
+              const name    = form.querySelector('[name="name"]').value.trim();
+              const phone   = form.querySelector('[name="phone"]').value.trim();
+              const email   = form.querySelector('[name="email"]').value.trim();
+              const course  = form.querySelector('[name="course"]').value;
+              const concern = form.querySelector('[name="concern"]').value.trim();
+              const isLead  = cb.checked;
+
+              if(!name || !phone || !email){ alert('Please fill in Name, Phone and Email.'); return; }
+
+              const btnText    = submitBtn.querySelector('.btn-text');
+              const btnLoading = submitBtn.querySelector('.btn-loading');
+              btnText.style.display = 'none';
+              btnLoading.style.display = '';
+              submitBtn.disabled = true;
+
+              try {
+                await fetch('/contact', {
+                  method: 'POST',
+                  headers: {'Content-Type':'application/x-www-form-urlencoded'},
+                  body: new URLSearchParams({name, phone, email, course, concern, is_lead: isLead ? '1' : '0'})
+                });
+
+                form.reset();
+                label.classList.remove('lead-active');
+                submitBtn.classList.remove('btn-submit-wa');
+                successDiv.style.display = '';
+                successDiv.scrollIntoView({behavior:'smooth', block:'nearest'});
+
+                if(isLead){
+                  const txt = encodeURIComponent(
+                    'Hi, I\'m ' + name + '. I\'m interested in ' + (course || 'your courses') + '.' +
+                    (concern ? ' My concern: ' + concern + '.' : '') +
+                    ' Contact me at: ' + phone
+                  );
+                  setTimeout(() => window.open('https://wa.me/919754444450?text=' + txt, '_blank'), 400);
+                }
+              } catch(err) {
+                alert('Something went wrong. Please try again or call us directly.');
+              } finally {
+                btnText.style.display = '';
+                btnLoading.style.display = 'none';
+                btnText.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Send Message';
+                submitBtn.disabled = false;
+              }
+            });
+          })();
+          </script>
         </div>
       </div>
     </div>

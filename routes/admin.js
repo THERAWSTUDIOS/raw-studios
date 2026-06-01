@@ -86,9 +86,14 @@ router.get('/admin', requireAdmin, async (req, res) => {
       sb.from('gallery').select('*', { count: 'exact', head: true }),
       sb.from('enquiries').select('*', { count: 'exact', head: true }).eq('is_read', false),
     ]);
-    res.render('admin/dashboard', { title: 'Admin Dashboard — TRS', admin: req.admin, courses, teachers, gallery, enquiries });
+    let leads = 0;
+    try {
+      const { count } = await sb.from('enquiries').select('*', { count: 'exact', head: true }).eq('is_lead', true).eq('is_read', false);
+      leads = count || 0;
+    } catch {}
+    res.render('admin/dashboard', { title: 'Admin Dashboard — TRS', admin: req.admin, courses, teachers, gallery, enquiries, leads });
   } catch (err) {
-    res.render('admin/dashboard', { title: 'Admin Dashboard — TRS', admin: req.admin, courses: 0, teachers: 0, gallery: 0 });
+    res.render('admin/dashboard', { title: 'Admin Dashboard — TRS', admin: req.admin, courses: 0, teachers: 0, gallery: 0, enquiries: 0, leads: 0 });
   }
 });
 

@@ -94,8 +94,12 @@ CREATE TABLE IF NOT EXISTS enquiries (
   message    TEXT,
   course     TEXT,
   is_read    BOOLEAN DEFAULT FALSE,
+  is_lead    BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Migration: run this if the table already exists without is_lead
+ALTER TABLE enquiries ADD COLUMN IF NOT EXISTS is_lead BOOLEAN DEFAULT FALSE;
 
 -- ============================================================
 -- SEED DATA — mirrors everything on the live website
