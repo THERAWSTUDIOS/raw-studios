@@ -103,115 +103,34 @@
     </div>
 
     <div class="row g-4 justify-content-center">
-      <!-- Rounak Sir -->
-      <div class="col-sm-6 col-lg-3 gsap-instructor" data-dir="left">
-        <div class="instructor-card">
+      <% const dirs = ['left','up','up','right']; %>
+      <% teachers.forEach((t, i) => { %>
+      <div class="col-sm-6 col-lg-3 gsap-instructor" data-dir="<%= dirs[i % 4] %>">
+        <div class="instructor-card<%= i === 2 ? ' featured-instructor' : '' %>">
+          <% if (i === 2) { %><div class="featured-badge"><i class="fa-solid fa-crown me-1"></i>Top Rated</div><% } %>
+          <% if (i === 3) { %><div class="new-badge"><i class="fa-solid fa-sparkles me-1"></i>New</div><% } %>
           <div class="instructor-photo-frame">
             <div class="instructor-photo-inner">
-              <img src="/images/bprounak.PNG" alt="Rounak Sir" class="instructor-photo"
+              <img src="<%= t.image %>" alt="<%= t.name %>" class="instructor-photo"
                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
-              <div class="instructor-photo-initial">R</div>
+              <div class="instructor-photo-initial"><%= t.name.charAt(0) %></div>
             </div>
             <div class="instructor-photo-ring"></div>
           </div>
-          <h3 class="instructor-name">Rounak Singh</h3>
+          <h3 class="instructor-name"><%= t.name %></h3>
           <div class="instructor-tags">
-            <span class="itag">Singing</span>
-            <span class="itag">Guitar</span>
-            <span class="itag">Piano</span>
+            <% t.tagsArray.forEach(tag => { %><span class="itag"><%= tag %></span><% }); %>
           </div>
           <div class="instructor-exp">
-            <i class="fa-solid fa-award"></i>12+ Years Experience
+            <i class="fa-solid fa-award"></i><%= t.experience %>
           </div>
-          <p class="instructor-bio">Classical excellence and contemporary innovation in every lesson. Founder of The Raw Studios and touring musician.</p>
+          <p class="instructor-bio"><%= t.bio %></p>
           <a href="/contact" class="btn btn-book-lesson btn-magnetic">
             <i class="fa-solid fa-calendar-plus me-2"></i>Book Lesson
           </a>
         </div>
       </div>
-
-      <!-- Lakshay Sir -->
-      <div class="col-sm-6 col-lg-3 gsap-instructor" data-dir="up">
-        <div class="instructor-card">
-          <div class="instructor-photo-frame">
-            <div class="instructor-photo-inner">
-              <img src="/images/laksh-sir.jpg" alt="Lakshay Sir" class="instructor-photo"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
-              <div class="instructor-photo-initial">L</div>
-            </div>
-            <div class="instructor-photo-ring"></div>
-          </div>
-          <h3 class="instructor-name">Lakshay</h3>
-          <div class="instructor-tags">
-            <span class="itag">Kathak</span>
-            <span class="itag">Semi-Classical</span>
-            <span class="itag">Bhangra</span>
-          </div>
-          <div class="instructor-exp">
-            <i class="fa-solid fa-award"></i>8+ Years Experience
-          </div>
-          <p class="instructor-bio">From traditional Kathak to modern choreography — bringing fire, grace, and discipline to every performance.</p>
-          <a href="/contact" class="btn btn-book-lesson btn-magnetic">
-            <i class="fa-solid fa-calendar-plus me-2"></i>Book Lesson
-          </a>
-        </div>
-      </div>
-
-      <!-- Vedant Sir — TOP RATED -->
-      <div class="col-sm-6 col-lg-3 gsap-instructor" data-dir="up">
-        <div class="instructor-card featured-instructor">
-          <div class="featured-badge"><i class="fa-solid fa-crown me-1"></i>Top Rated</div>
-          <div class="instructor-photo-frame">
-            <div class="instructor-photo-inner">
-              <img src="/images/bpvedant.jpeg" alt="Vedant Sareen" class="instructor-photo"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
-              <div class="instructor-photo-initial">V</div>
-            </div>
-            <div class="instructor-photo-ring"></div>
-          </div>
-          <h3 class="instructor-name">Vedant</h3>
-          <div class="instructor-tags">
-            <span class="itag">Flute</span>
-            <span class="itag">Sitar</span>
-            <span class="itag">Violin</span>
-          </div>
-          <div class="instructor-exp">
-            <i class="fa-solid fa-award"></i>7+ Years Experience
-          </div>
-          <p class="instructor-bio">Master of Indian and Western classical instruments. Brings deep musical knowledge to every guided session.</p>
-          <a href="/contact" class="btn btn-book-lesson btn-magnetic">
-            <i class="fa-solid fa-calendar-plus me-2"></i>Book Lesson
-          </a>
-        </div>
-      </div>
-
-      <!-- Monika Mam — NEW (Yoga Teacher) -->
-      <div class="col-sm-6 col-lg-3 gsap-instructor" data-dir="right">
-        <div class="instructor-card">
-          <div class="new-badge"><i class="fa-solid fa-sparkles me-1"></i>New</div>
-          <div class="instructor-photo-frame">
-            <div class="instructor-photo-inner">
-              <img src="/images/monaika-mam.jpg" alt="Monika Mam" class="instructor-photo"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
-              <div class="instructor-photo-initial">M</div>
-            </div>
-            <div class="instructor-photo-ring"></div>
-          </div>
-          <h3 class="instructor-name">Monika</h3>
-          <div class="instructor-tags">
-            <span class="itag">Yoga</span>
-            <span class="itag">Wellness</span>
-            <span class="itag">Mindfulness</span>
-          </div>
-          <div class="instructor-exp">
-            <i class="fa-solid fa-award"></i>5+ Years Experience
-          </div>
-          <p class="instructor-bio">Certified yoga instructor bringing balance, mindfulness, and holistic wellness to students of all levels.</p>
-          <a href="/contact" class="btn btn-book-lesson btn-magnetic">
-            <i class="fa-solid fa-calendar-plus me-2"></i>Book Lesson
-          </a>
-        </div>
-      </div>
+      <% }); %>
     </div>
   </div>
 </section>
@@ -227,95 +146,14 @@
       <p class="section-subtitle gsap-reveal">Glimpses of our performances, classes, and studio life at The Raw Studios.</p>
     </div>
 
-    <div class="gallery-collage gsap-reveal">
-      <div class="gallery-item gi-big">
-        <img src="/images/col.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
+    <% const giClasses = ['gi-big','','gi-tall','','','gi-wide','','','gi-wide','gi-tall','','','','gi-big','','gi-wide','','','gi-tall','','gi-wide','']; %>
+    <div class="gallery-grid gsap-reveal">
+      <% gallery.forEach((g, i) => { %>
+      <div class="gallery-item <%= giClasses[i % giClasses.length] %>">
+        <img src="<%= g.image_url %>" alt="<%= g.caption || 'Raw Studios Gallery' %>" loading="lazy" onerror="this.style.display='none'"/>
         <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
       </div>
-      <div class="gallery-item">
-        <img src="/images/col2.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item gi-tall">
-        <img src="/images/col3.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item">
-        <img src="/images/col4.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item">
-        <img src="/images/col5.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item gi-wide">
-        <img src="/images/col6.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item">
-        <img src="/images/col7.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item">
-        <img src="/images/col8.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item gi-wide">
-        <img src="/images/col9.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item gi-tall">
-        <img src="/images/col10.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item">
-        <img src="/images/col11.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item">
-        <img src="/images/col12.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item">
-        <img src="/images/col13.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item gi-big">
-        <img src="/images/col14.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item">
-        <img src="/images/col15.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item gi-wide">
-        <img src="/images/col16.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item">
-        <img src="/images/col17.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item">
-        <img src="/images/col18.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item gi-tall">
-        <img src="/images/col19.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item">
-        <img src="/images/col20.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item gi-wide">
-        <img src="/images/col21.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
-      <div class="gallery-item">
-        <img src="/images/col22.jpeg" alt="Raw Studios Gallery" loading="lazy" onerror="this.style.display='none'"/>
-        <div class="gi-overlay"><i class="fa-solid fa-expand"></i></div>
-      </div>
+      <% }); %>
     </div>
   </div>
 </section>

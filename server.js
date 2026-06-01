@@ -5,6 +5,7 @@ const axios        = require('axios');
 const fs           = require('fs');
 const cookieParser = require('cookie-parser');
 const adminRoutes  = require('./routes/admin');
+const { getSupabase } = require('./lib/supabase');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -19,6 +20,42 @@ app.use(cookieParser());
 
 // ─── Admin routes (/trstestrounak, /admin/*) ─────────────────
 app.use(adminRoutes);
+
+// ─── Supabase data fetchers ───────────────────────────────────
+async function getCourses() {
+  try {
+    const { data } = await getSupabase()
+      .from('courses').select('*').eq('is_active', true).order('sort_order');
+    return (data || []).map(c => ({ ...c, desc: c.description }));
+  } catch { return []; }
+}
+
+async function getTeachers() {
+  try {
+    const { data } = await getSupabase()
+      .from('teachers').select('*').eq('is_active', true).order('sort_order');
+    return (data || []).map(t => ({
+      ...t,
+      tagsArray: (t.tags || '').split(',').map(s => s.trim()).filter(Boolean)
+    }));
+  } catch { return []; }
+}
+
+async function getGallery() {
+  try {
+    const { data } = await getSupabase()
+      .from('gallery').select('*').order('sort_order');
+    return data || [];
+  } catch { return []; }
+}
+
+async function getLabelVideos() {
+  try {
+    const { data } = await getSupabase()
+      .from('label_videos').select('*').eq('is_active', true).order('sort_order');
+    return (data || []).map(v => ({ id: v.youtube_id, title: v.title, artist: v.artist, type: v.type }));
+  } catch { return []; }
+}
 
 // ─── Reviews cache (5-min TTL) ──────────────────────────────
 let reviewsCache   = null;
@@ -146,29 +183,6 @@ async function fetchGoogleReviews() {
   }
 }
 
-// ─── Data ─────────────────────────────────────────────────────
-// Course images should be placed at public/images/courses/<filename>.jpg
-const coursesData = [
-  { id:1,  title:'Singing Classes',  instructor:'Rounak Sir',  category:'music', icon:'fa-microphone',    price:'₹2,499', desc:'Learn classical and modern vocal techniques from expert trainers.',                     image:'/images/courses/singing.jpg'       },
-  { id:2,  title:'Guitar Classes',   instructor:'Rounak Sir',  category:'music', icon:'fa-guitar',        price:'₹2,499', desc:'Master acoustic and electric guitar with structured lessons.',                         image:'/images/courses/guitar.jpg'        },
-  { id:3,  title:'Piano Classes',    instructor:'Rounak Sir',  category:'music', icon:'fa-music',         price:'₹2,499', desc:'Build strong piano skills with classical & modern training.',                         image:'/images/courses/piano.jpg'         },
-  { id:4,  title:'Flute Classes',    instructor:'Vedant Sir',  category:'music', icon:'fa-wind',          price:'₹2,499', desc:'Explore the art of flute with guided professional instruction.',                      image:'/images/courses/flute.jpg'         },
-  { id:5,  title:'Drums',            instructor:'Vedant Sir',  category:'music', icon:'fa-drum',          price:'₹2,499', desc:'Master rhythm and beats with dynamic drum lessons.',                                  image:'/images/courses/drums.jpg'         },
-  { id:6,  title:'Clapbox Classes',   instructor:'Vedant Sir',  category:'music', icon:'fa-box',           price:'₹2,499', desc:'Percussive groove and hand drum techniques.',                                        image:'/images/courses/clapbox.jpg'       },
-  { id:7,  title:'Violin',           instructor:'Vedant Sir',  category:'music', icon:'fa-sliders',       price:'₹2,499', desc:'Master the strings with classical & contemporary violin lessons.',                    image:'/images/courses/violin.jpg'        },
-  { id:8,  title:'Sitar',            instructor:'Vedant Sir',  category:'music', icon:'fa-circle-nodes',  price:'₹2,499', desc:'Explore the depth of Indian classical music through sitar.',                         image:'/images/courses/sitar.jpg'         },
-  { id:9,  title:'Classical Dance',  instructor:'Lakshay Sir', category:'dance', icon:'fa-star',          price:'₹2,499', desc:'Traditional Indian dance forms and graceful expressions.',                           image:'/images/courses/classicaldance.jpg'},
-  { id:10, title:'Bhangra Classes',  instructor:'Lakshay Sir', category:'dance', icon:'fa-fire',          price:'₹2,499', desc:'High-energy folk dance and rhythmic movements.',                                     image:'/images/courses/bhangra.jpg'       },
-  { id:11, title:'Western Dance',    instructor:'Lakshay Sir', category:'dance', icon:'fa-person-walking',price:'₹2,499', desc:'Urban dance styles and creative choreography.',                                       image:'/images/courses/western-dance.jpg' },
-  { id:12, title:'Yoga',             instructor:'Monika',      category:'dance', icon:'fa-spa',           price:'₹2,499', desc:'Balance your mind and body through strength and flow.',                              image:'/images/courses/yoga.jpg'          },
-];
-
-const labelVideos = [
-  { id:'d2bU-zANIH8', title:'Baat Itni Si Hai |Love is Feeling| Official Song | Rounak Singh | Sobia Kaur | Raw Studios', artist:'Rounak Singh ft. Sobia Kaur', type:'recorded' },
-  { id:'2VraEY8XMdw', title:'Superstar ( Full song) Rounak Singh',                                                       artist:'Rounak Singh',               type:'recorded' },
-  { id:'KnWLEZc0hQc', title:'Rounak Singh : Chal Ud Challiye | Lets Fly | Ft Yasmeen | Latest Song | Official Video',    artist:'Rounak Singh ft. Yasmeen',   type:'recorded' },
-];
-
 // ─── Routes ───────────────────────────────────────────────────
 function isLive() {
   const key = process.env.GOOGLE_API_KEY;
@@ -177,23 +191,31 @@ function isLive() {
 }
 
 app.get('/', async (req, res) => {
-  const reviews = await fetchGoogleReviews();
-  res.render('index', { title:'The Raw Studios — Music & Dance Academy', reviews, courses: coursesData.slice(0,4), live: isLive() });
+  const [reviews, courses, teachers, gallery] = await Promise.all([
+    fetchGoogleReviews(), getCourses(), getTeachers(), getGallery()
+  ]);
+  res.render('index', { title:'The Raw Studios — Music & Dance Academy', reviews, courses: courses.slice(0,4), teachers, gallery, live: isLive() });
 });
-app.get('/courses', (req, res) => {
-  res.render('courses', { title:'Our Courses — The Raw Studios', courses: coursesData });
+
+app.get('/courses', async (req, res) => {
+  const courses = await getCourses();
+  res.render('courses', { title:'Our Courses — The Raw Studios', courses });
 });
-app.get('/label', (req, res) => {
+
+app.get('/label', async (req, res) => {
+  const videos = await getLabelVideos();
   res.render('label', {
     title: 'Label & Performances — The Raw Studios',
-    liveVideos:     labelVideos.filter(v => v.type === 'live'),
-    recordedVideos: labelVideos.filter(v => v.type === 'recorded'),
+    liveVideos:     videos.filter(v => v.type === 'live'),
+    recordedVideos: videos.filter(v => v.type === 'recorded'),
   });
 });
+
 app.get('/about', async (req, res) => {
-  const reviews = await fetchGoogleReviews();
-  res.render('about', { title:'About Us — The Raw Studios', reviews, live: isLive() });
+  const [reviews, teachers] = await Promise.all([fetchGoogleReviews(), getTeachers()]);
+  res.render('about', { title:'About Us — The Raw Studios', reviews, teachers, live: isLive() });
 });
+
 app.get('/contact', (req, res) => {
   res.render('contact', { title:'Contact Us — The Raw Studios', success:null, error:null });
 });
@@ -215,7 +237,11 @@ app.get('/api/reviews', async (req, res) => {
   res.json({ count: reviews.length, live: isLive(), reviews });
 });
 
-app.post('/contact', (req, res) => {
+app.post('/contact', async (req, res) => {
+  const { name, email, phone, message, course } = req.body;
+  try {
+    await getSupabase().from('enquiries').insert([{ name, email, phone, message, course }]);
+  } catch {}
   res.render('contact', { title:'Contact Us — The Raw Studios', success:"We received your enquiry! Our team will reach out to you on WhatsApp shortly.", error:null });
 });
 
