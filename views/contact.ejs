@@ -175,8 +175,16 @@
             var submitBtn  = document.getElementById('submitBtn');
             var successDiv = document.getElementById('successMsg');
 
+            /* Pre-cache DOM elements — direct reads, zero ambiguity */
+            var nameEl    = form.querySelector('input[name="name"]');
+            var phoneEl   = form.querySelector('input[name="phone"]');
+            var emailEl   = form.querySelector('input[name="email"]');
+            var courseEl  = form.querySelector('select[name="course"]');
+            var concernEl = form.querySelector('textarea[name="concern"]');
+
             function showErr(fieldName, msg) {
               var el = form.querySelector('[name="' + fieldName + '"]');
+              if (!el) return;
               el.style.borderColor = '#e53e3e';
               var err = form.querySelector('.trs-err-' + fieldName);
               if (!err) {
@@ -190,8 +198,8 @@
             function clearErr(fieldName) {
               var el = form.querySelector('[name="' + fieldName + '"]');
               if (el) el.style.borderColor = '';
-              var err = form.querySelector('.trs-err-' + fieldName);
-              if (err) err.textContent = '';
+              var errEl = form.querySelector('.trs-err-' + fieldName);
+              if (errEl) errEl.textContent = '';
             }
             function clearAllErr() {
               ['name','phone','email'].forEach(clearErr);
@@ -201,7 +209,7 @@
               label.classList.toggle('lead-active', cb.checked);
               submitBtn.classList.toggle('btn-submit-wa', cb.checked);
               submitBtn.querySelector('.btn-text').innerHTML = cb.checked
-                ? '<i class="fa-brands fa-whatsapp me-2"></i>Send & Open WhatsApp'
+                ? '<i class="fa-brands fa-whatsapp me-2"></i>Send &amp; Open WhatsApp'
                 : '<i class="fa-solid fa-paper-plane me-2"></i>Send Message';
             });
 
@@ -210,17 +218,20 @@
               e.stopPropagation();
               clearAllErr();
 
-              /* Use FormData — avoids window.name / window.email naming conflicts */
-              var fd         = new FormData(form);
-              var fullName   = (fd.get('name')    || '').trim();
-              var rawPhone   = (fd.get('phone')   || '').trim();
-              var emailVal   = (fd.get('email')   || '').trim();
-              var courseVal  = (fd.get('course')  || '');
-              var concernVal = (fd.get('concern') || '').trim();
+              /* Read directly from DOM — avoids window.name / FormData edge cases */
+              var fullName   = nameEl    ? nameEl.value.trim()    : '';
+              var rawPhone   = phoneEl   ? phoneEl.value.trim()   : '';
+              var emailVal   = emailEl   ? emailEl.value.trim()   : '';
+              var courseVal  = courseEl  ? courseEl.value         : '';
+              var concernVal = concernEl ? concernEl.value.trim() : '';
               var openWA     = cb.checked;
 
+              /* ── Validate ── */
               var valid = true;
-              if (!fullName) { showErr('name', 'Full name is required.'); valid = false; }
+              if (!fullName) {
+                showErr('name', 'Full name is required.');
+                valid = false;
+              }
 
               var phoneDigits = rawPhone.replace(/\D/g, '');
               if (!phoneDigits || !/^[6-9]\d{9}$/.test(phoneDigits)) {
@@ -233,55 +244,60 @@
                 valid = false;
               }
 
-              if (valid !== true) return;
+              if (!valid) return; /* ← hard stop — WhatsApp never opens on bad input */
 
-              /* Build WhatsApp message NOW — before fetch/reset wipe the values */
+              /* ── Build WhatsApp message BEFORE fetch/reset ── */
               var waMsg = openWA
                 ? 'Hello! I found your contact from The Raw Studios website.\n' +
                   '*Name:* ' + fullName + '\n' +
                   '*Phone:* ' + phoneDigits + '\n' +
                   '*Email:* ' + emailVal + '\n' +
-                  (courseVal ? '*Course:* ' + courseVal + '\n' : '') +
+                  (courseVal  ? '*Course:* '  + courseVal  + '\n' : '') +
                   (concernVal ? '*Message:* ' + concernVal + '\n' : '') +
                   'I would like to know more about your courses and timings. Please guide me!'
                 : null;
 
               var btnText    = submitBtn.querySelector('.btn-text');
               var btnLoading = submitBtn.querySelector('.btn-loading');
-              btnText.style.display = 'none';
+              btnText.style.display    = 'none';
               btnLoading.style.display = '';
               submitBtn.disabled = true;
 
               try {
                 var res = await fetch('/contact', {
                   method: 'POST',
-                  headers: {'Content-Type':'application/x-www-form-urlencoded'},
+                  headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                   body: new URLSearchParams({
                     name: fullName, phone: phoneDigits, email: emailVal,
                     course: courseVal, concern: concernVal, is_lead: '1'
                   })
                 });
                 var data = await res.json();
-                if (!res.ok) { showErr('name', data.error || 'Something went wrong. Please try again.'); return; }
+                if (!res.ok) {
+                  showErr('name', data.error || 'Something went wrong. Please try again.');
+                  return;
+                }
 
                 form.reset();
                 clearAllErr();
                 label.classList.remove('lead-active');
                 submitBtn.classList.remove('btn-submit-wa');
                 successDiv.style.display = '';
-                successDiv.scrollIntoView({behavior:'smooth', block:'nearest'});
+                successDiv.scrollIntoView({behavior: 'smooth', block: 'nearest'});
 
                 if (openWA && waMsg) {
                   setTimeout(function() {
                     window.open('https://wa.me/919754444450?text=' + encodeURIComponent(waMsg), '_blank');
                   }, 400);
                 }
-              } catch(err) {
+              } catch (fetchErr) {
                 showErr('name', 'Something went wrong. Please try again or call us directly.');
               } finally {
-                btnText.style.display = '';
+                btnText.style.display    = '';
                 btnLoading.style.display = 'none';
-                btnText.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Send Message';
+                btnText.innerHTML = cb.checked
+                  ? '<i class="fa-brands fa-whatsapp me-2"></i>Send &amp; Open WhatsApp'
+                  : '<i class="fa-solid fa-paper-plane me-2"></i>Send Message';
                 submitBtn.disabled = false;
               }
             });
