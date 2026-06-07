@@ -348,6 +348,17 @@ img { max-width: 100%; }
   transform: rotate(-8deg) scale(1.08);
   box-shadow: 0 6px 22px rgba(255,98,0,0.55);
 }
+.brand-logo-img {
+  height: 38px;
+  width: auto;
+  border-radius: 8px;
+  object-fit: contain;
+  flex-shrink: 0;
+  transition: transform 0.3s;
+}
+.trs-brand:hover .brand-logo-img {
+  transform: scale(1.06);
+}
 .brand-text {
   font-family: 'Playfair Display', serif;
   font-size: 1.18rem;
