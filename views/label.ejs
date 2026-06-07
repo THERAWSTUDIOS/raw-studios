@@ -12,52 +12,82 @@
 </section>
 
 <!-- ══════════════════════════════════════════════
-     LIVE PERFORMANCES
+     STUDENT REELS & SHORTS
 ═══════════════════════════════════════════════ -->
-<section class="trs-section label-section">
+<section class="trs-section reels-carousel-section">
   <div class="container">
     <div class="section-header text-center mb-5">
-      <span class="section-tag gsap-reveal">On Stage</span>
-      <h2 class="section-title gsap-reveal">Live <span class="text-gradient">Performances</span></h2>
-      <p class="section-subtitle gsap-reveal">Watch our electrifying on-stage concerts and student showcases.</p>
+      <span class="section-tag gsap-reveal reels-section-tag">Student Reels</span>
+      <h2 class="section-title gsap-reveal reels-section-title">Student <span class="text-gradient">Reels &amp; Shorts</span></h2>
+      <p class="section-subtitle gsap-reveal reels-section-sub">Moments from our classes, performances &amp; backstage life on Instagram.</p>
     </div>
 
-    <div class="row g-4 justify-content-center">
-      <!-- Instagram Reels / Shorts — Coming Soon card -->
-      <div class="col-sm-8 col-md-5 col-lg-4 gsap-card" data-index="0">
-        <div class="reel-coming-soon-card">
-          <div class="reel-cs-inner">
-            <!-- top bar -->
-            <div class="reel-cs-topbar">
-              <span class="reel-cs-dot"></span>
-              <span class="reel-cs-dot"></span>
-              <span class="reel-cs-dot"></span>
+    <div class="reels-swiper-outer gsap-reveal">
+      <div class="swiper reels-carousel-swiper">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide d-flex justify-content-center">
+            <div class="reel-embed-wrap">
+              <iframe src="https://www.instagram.com/reel/DYeoRlQzCzc/embed/" class="reel-iframe" allowfullscreen frameborder="0" scrolling="no" loading="lazy"></iframe>
             </div>
-            <!-- icon area -->
-            <div class="reel-cs-icon-wrap">
-              <div class="reel-cs-ring reel-cs-ring-1"></div>
-              <div class="reel-cs-ring reel-cs-ring-2"></div>
-              <i class="fa-brands fa-instagram reel-cs-icon"></i>
+          </div>
+          <div class="swiper-slide d-flex justify-content-center">
+            <div class="reel-embed-wrap">
+              <iframe src="https://www.instagram.com/reel/DT7ukPjE3qX/embed/" class="reel-iframe" allowfullscreen frameborder="0" scrolling="no" loading="lazy"></iframe>
             </div>
-            <!-- text -->
-            <div class="reel-cs-body">
-              <h3 class="reel-cs-title">Student Reels &amp; Shorts</h3>
-              <p class="reel-cs-sub">Moments from our classes, performances &amp; backstage life — coming to Instagram very soon.</p>
-              <div class="reel-cs-badge">
-                <span class="reel-cs-dot-pulse"></span>
-                Coming Soon
-              </div>
+          </div>
+          <div class="swiper-slide d-flex justify-content-center">
+            <div class="reel-embed-wrap">
+              <iframe src="https://www.instagram.com/reel/DKzMWJ8xEbG/embed/" class="reel-iframe" allowfullscreen frameborder="0" scrolling="no" loading="lazy"></iframe>
             </div>
-            <!-- bottom label -->
-            <div class="reel-cs-platform">
-              <i class="fa-brands fa-instagram me-2"></i>@therawstudiosofficial
+          </div>
+          <div class="swiper-slide d-flex justify-content-center">
+            <div class="reel-embed-wrap">
+              <iframe src="https://www.instagram.com/reel/DUvJUveE8bm/embed/" class="reel-iframe" allowfullscreen frameborder="0" scrolling="no" loading="lazy"></iframe>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="reviews-nav-row mt-4">
+        <button class="swiper-nav-btn reels-prev" aria-label="Previous reel">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <div class="swiper-pagination reels-pagination"></div>
+        <button class="swiper-nav-btn reels-next" aria-label="Next reel">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="text-center mt-4 gsap-reveal">
+      <a href="https://www.instagram.com/therawstudiosofficial" target="_blank" rel="noopener" class="btn btn-outline-reels">
+        <i class="fa-brands fa-instagram me-2"></i>Follow @therawstudiosofficial
+      </a>
     </div>
   </div>
 </section>
+
+<script>
+(function() {
+  function initReelsSwiper() {
+    if (typeof Swiper === 'undefined') { setTimeout(initReelsSwiper, 100); return; }
+    new Swiper('.reels-carousel-swiper', {
+      loop: true,
+      centeredSlides: true,
+      slidesPerView: 1,
+      spaceBetween: 20,
+      autoplay: { delay: 5000, disableOnInteraction: false },
+      pagination: { el: '.reels-pagination', clickable: true },
+      navigation: { nextEl: '.reels-next', prevEl: '.reels-prev' },
+      breakpoints: {
+        768: { slidesPerView: 1.3, spaceBetween: 24 },
+        1024: { slidesPerView: 1.8, spaceBetween: 32 }
+      }
+    });
+  }
+  document.addEventListener('DOMContentLoaded', initReelsSwiper);
+})();
+</script>
 
 <!-- ══════════════════════════════════════════════
      RECORDED PERFORMANCES

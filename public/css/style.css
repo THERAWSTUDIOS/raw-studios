@@ -1822,6 +1822,57 @@ img { max-width: 100%; }
 .youtube-link:hover { color: #FF6200; }
 .label-cta-text { font-size: 1.05rem; color: #555555; line-height: 1.75; }
 
+/* ── Reels Carousel Section ─────────────────────────────────── */
+.reels-carousel-section {
+  background: #0F0F0F;
+  overflow: hidden;
+}
+.reels-section-tag {
+  color: #FFB300 !important;
+  border-color: #FFB300 !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+.reels-section-title { color: #ffffff !important; }
+.reels-section-sub   { color: rgba(255,255,255,0.65) !important; }
+.reels-swiper-outer  { width: 100%; overflow: hidden; }
+.reels-carousel-swiper { overflow: visible; }
+.reel-embed-wrap {
+  width: 320px;
+  height: 570px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #1a1a1a;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.55);
+  flex-shrink: 0;
+}
+.reel-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+.btn-outline-reels {
+  border: 2px solid rgba(255,255,255,0.35);
+  color: #fff;
+  border-radius: 50px;
+  padding: 10px 28px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: border-color 0.3s, background 0.3s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.btn-outline-reels:hover {
+  border-color: #FF6200;
+  background: rgba(255,98,0,0.15);
+  color: #fff;
+}
+@media (max-width: 480px) {
+  .reel-embed-wrap { width: 280px; height: 500px; }
+}
+
 /* ── Reel / Shorts Coming-Soon Card ─────────────────────────── */
 .reel-coming-soon-card {
   border-radius: 24px;
