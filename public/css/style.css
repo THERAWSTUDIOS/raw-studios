@@ -1835,6 +1835,15 @@ img { max-width: 100%; }
 }
 .reels-section-title { color: #ffffff !important; }
 .reels-section-sub   { color: rgba(255,255,255,0.65) !important; }
+.reels-white-box {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 36px 24px 28px;
+  max-width: 520px;
+  margin: 0 auto;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.18);
+  overflow: hidden;
+}
 .reels-swiper-outer  { width: 100%; overflow: hidden; }
 .reels-carousel-swiper { overflow: visible; }
 .reel-embed-wrap {
