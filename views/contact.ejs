@@ -233,7 +233,18 @@
                 valid = false;
               }
 
-              if (!valid) return;
+              if (valid !== true) return;
+
+              /* Build WhatsApp message NOW — before fetch/reset wipe the values */
+              var waMsg = openWA
+                ? 'Hello! I found your contact from The Raw Studios website.\n' +
+                  '*Name:* ' + fullName + '\n' +
+                  '*Phone:* ' + phoneDigits + '\n' +
+                  '*Email:* ' + emailVal + '\n' +
+                  (courseVal ? '*Course:* ' + courseVal + '\n' : '') +
+                  (concernVal ? '*Message:* ' + concernVal + '\n' : '') +
+                  'I would like to know more about your courses and timings. Please guide me!'
+                : null;
 
               var btnText    = submitBtn.querySelector('.btn-text');
               var btnLoading = submitBtn.querySelector('.btn-loading');
@@ -260,15 +271,7 @@
                 successDiv.style.display = '';
                 successDiv.scrollIntoView({behavior:'smooth', block:'nearest'});
 
-                if (openWA) {
-                  var waMsg =
-                    'Hello! I found your contact from The Raw Studios website.\n' +
-                    '*Name:* ' + fullName + '\n' +
-                    '*Phone:* ' + phoneDigits + '\n' +
-                    '*Email:* ' + emailVal + '\n' +
-                    (courseVal ? '*Course:* ' + courseVal + '\n' : '') +
-                    (concernVal ? '*Message:* ' + concernVal + '\n' : '') +
-                    'I would like to know more about your courses and timings. Please guide me!';
+                if (openWA && waMsg) {
                   setTimeout(function() {
                     window.open('https://wa.me/919754444450?text=' + encodeURIComponent(waMsg), '_blank');
                   }, 400);
