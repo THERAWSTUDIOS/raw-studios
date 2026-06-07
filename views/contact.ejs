@@ -169,13 +169,35 @@
           </style>
           <script>
           (function(){
-            const form      = document.getElementById('contactForm');
-            const cb        = document.getElementById('confirmLead');
-            const label     = document.getElementById('leadLabel');
-            const submitBtn = document.getElementById('submitBtn');
-            const successDiv = document.getElementById('successMsg');
+            var form       = document.getElementById('contactForm');
+            var cb         = document.getElementById('confirmLead');
+            var label      = document.getElementById('leadLabel');
+            var submitBtn  = document.getElementById('submitBtn');
+            var successDiv = document.getElementById('successMsg');
 
-            cb.addEventListener('change', () => {
+            function showErr(fieldName, msg) {
+              var el = form.querySelector('[name="' + fieldName + '"]');
+              el.style.borderColor = '#e53e3e';
+              var err = form.querySelector('.trs-err-' + fieldName);
+              if (!err) {
+                err = document.createElement('p');
+                err.className = 'trs-err-' + fieldName;
+                err.style.cssText = 'color:#e53e3e;font-size:.78rem;margin:4px 0 0 4px;';
+                el.closest('.trs-input-wrap').after(err);
+              }
+              err.textContent = msg;
+            }
+            function clearErr(fieldName) {
+              var el = form.querySelector('[name="' + fieldName + '"]');
+              if (el) el.style.borderColor = '';
+              var err = form.querySelector('.trs-err-' + fieldName);
+              if (err) err.textContent = '';
+            }
+            function clearAllErr() {
+              ['name','phone','email'].forEach(clearErr);
+            }
+
+            cb.addEventListener('change', function() {
               label.classList.toggle('lead-active', cb.checked);
               submitBtn.classList.toggle('btn-submit-wa', cb.checked);
               submitBtn.querySelector('.btn-text').innerHTML = cb.checked
@@ -183,62 +205,73 @@
                 : '<i class="fa-solid fa-paper-plane me-2"></i>Send Message';
             });
 
-            form.addEventListener('submit', async (e) => {
+            form.addEventListener('submit', async function(e) {
               e.preventDefault();
-              const name    = form.querySelector('[name="name"]').value.trim();
-              const phone   = form.querySelector('[name="phone"]').value.trim();
-              const email   = form.querySelector('[name="email"]').value.trim();
-              const course  = form.querySelector('[name="course"]').value;
-              const concern = form.querySelector('[name="concern"]').value.trim();
-              const openWA  = cb.checked;
+              clearAllErr();
 
-              if (!name) { alert('Please enter your full name.'); return; }
+              var fullName   = (form.querySelector('[name="name"]').value || '').trim();
+              var rawPhone   = (form.querySelector('[name="phone"]').value || '').trim();
+              var emailVal   = (form.querySelector('[name="email"]').value || '').trim();
+              var courseVal  = form.querySelector('[name="course"]').value || '';
+              var concernVal = (form.querySelector('[name="concern"]').value || '').trim();
+              var openWA     = cb.checked;
 
-              const phoneDigits = phone.replace(/\D/g, '');
-              if (!/^[6-9]\d{9}$/.test(phoneDigits)) {
-                alert('Please enter a valid 10-digit Indian mobile number (starting with 6–9).');
-                return;
+              var valid = true;
+              if (!fullName) { showErr('name', 'Full name is required.'); valid = false; }
+
+              var phoneDigits = rawPhone.replace(/\D/g, '');
+              if (!phoneDigits || !/^[6-9]\d{9}$/.test(phoneDigits)) {
+                showErr('phone', 'Enter a valid 10-digit Indian mobile number (starts with 6–9).');
+                valid = false;
               }
 
-              if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-                alert('Please enter a valid email address.');
-                return;
+              if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal)) {
+                showErr('email', 'Enter a valid email address.');
+                valid = false;
               }
 
-              const btnText    = submitBtn.querySelector('.btn-text');
-              const btnLoading = submitBtn.querySelector('.btn-loading');
+              if (!valid) return;
+
+              var btnText    = submitBtn.querySelector('.btn-text');
+              var btnLoading = submitBtn.querySelector('.btn-loading');
               btnText.style.display = 'none';
               btnLoading.style.display = '';
               submitBtn.disabled = true;
 
               try {
-                const res = await fetch('/contact', {
+                var res = await fetch('/contact', {
                   method: 'POST',
                   headers: {'Content-Type':'application/x-www-form-urlencoded'},
-                  body: new URLSearchParams({name, phone: phoneDigits, email, course, concern, is_lead: '1'})
+                  body: new URLSearchParams({
+                    name: fullName, phone: phoneDigits, email: emailVal,
+                    course: courseVal, concern: concernVal, is_lead: '1'
+                  })
                 });
-                const data = await res.json();
-                if (!res.ok) { alert(data.error || 'Something went wrong. Please try again.'); return; }
+                var data = await res.json();
+                if (!res.ok) { showErr('name', data.error || 'Something went wrong. Please try again.'); return; }
 
                 form.reset();
+                clearAllErr();
                 label.classList.remove('lead-active');
                 submitBtn.classList.remove('btn-submit-wa');
                 successDiv.style.display = '';
                 successDiv.scrollIntoView({behavior:'smooth', block:'nearest'});
 
                 if (openWA) {
-                  const msg =
+                  var waMsg =
                     'Hello! I found your contact from The Raw Studios website.\n' +
-                    '*Name:* ' + name + '\n' +
+                    '*Name:* ' + fullName + '\n' +
                     '*Phone:* ' + phoneDigits + '\n' +
-                    '*Email:* ' + email + '\n' +
-                    (course ? '*Course:* ' + course + '\n' : '') +
-                    (concern ? '*Message:* ' + concern + '\n' : '') +
+                    '*Email:* ' + emailVal + '\n' +
+                    (courseVal ? '*Course:* ' + courseVal + '\n' : '') +
+                    (concernVal ? '*Message:* ' + concernVal + '\n' : '') +
                     'I would like to know more about your courses and timings. Please guide me!';
-                  setTimeout(() => window.open('https://wa.me/919754444450?text=' + encodeURIComponent(msg), '_blank'), 400);
+                  setTimeout(function() {
+                    window.open('https://wa.me/919754444450?text=' + encodeURIComponent(waMsg), '_blank');
+                  }, 400);
                 }
               } catch(err) {
-                alert('Something went wrong. Please try again or call us directly.');
+                showErr('name', 'Something went wrong. Please try again or call us directly.');
               } finally {
                 btnText.style.display = '';
                 btnLoading.style.display = 'none';
