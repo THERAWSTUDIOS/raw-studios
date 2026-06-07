@@ -207,13 +207,16 @@
 
             form.addEventListener('submit', async function(e) {
               e.preventDefault();
+              e.stopPropagation();
               clearAllErr();
 
-              var fullName   = (form.querySelector('[name="name"]').value || '').trim();
-              var rawPhone   = (form.querySelector('[name="phone"]').value || '').trim();
-              var emailVal   = (form.querySelector('[name="email"]').value || '').trim();
-              var courseVal  = form.querySelector('[name="course"]').value || '';
-              var concernVal = (form.querySelector('[name="concern"]').value || '').trim();
+              /* Use FormData — avoids window.name / window.email naming conflicts */
+              var fd         = new FormData(form);
+              var fullName   = (fd.get('name')    || '').trim();
+              var rawPhone   = (fd.get('phone')   || '').trim();
+              var emailVal   = (fd.get('email')   || '').trim();
+              var courseVal  = (fd.get('course')  || '');
+              var concernVal = (fd.get('concern') || '').trim();
               var openWA     = cb.checked;
 
               var valid = true;

@@ -217,6 +217,7 @@ app.get('/about', async (req, res) => {
 });
 
 app.get('/contact', (req, res) => {
+  res.set('Cache-Control', 'no-store');
   res.render('contact', { title:'Contact Us — The Raw Studios', success:null, error:null });
 });
 
