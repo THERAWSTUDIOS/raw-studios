@@ -155,34 +155,32 @@
           </form>
 
           <style>
-            .trs-lead-checkbox{display:flex;align-items:center;gap:.75rem;cursor:pointer;padding:.85rem 1.1rem;border-radius:12px;border:1.5px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);transition:.3s}
-            .trs-lead-checkbox:hover{border-color:rgba(37,211,102,0.3);background:rgba(37,211,102,0.04)}
+            .trs-lead-checkbox{display:flex;align-items:center;gap:.75rem;cursor:pointer;padding:.85rem 1.1rem;border-radius:12px;border:1.5px solid rgba(0,0,0,0.12);background:rgba(37,211,102,0.03);transition:.3s}
+            .trs-lead-checkbox:hover{border-color:rgba(37,211,102,0.4);background:rgba(37,211,102,0.07)}
             .trs-lead-checkbox input{display:none}
-            .lead-checkbox-box{width:20px;height:20px;border-radius:5px;border:2px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.25s;color:#fff;font-size:.65rem}
+            .lead-checkbox-box{width:20px;height:20px;border-radius:5px;border:2px solid rgba(0,0,0,0.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.25s;color:#fff;font-size:.65rem}
             .trs-lead-checkbox input:checked ~ .lead-checkbox-box{background:#25d366;border-color:#25d366}
-            .lead-checkbox-text{flex:1;font-size:.84rem;color:var(--muted);transition:.25s}
-            .trs-lead-checkbox input:checked ~ .lead-checkbox-box ~ .lead-checkbox-text{color:var(--text)}
-            .lead-wa-badge{background:rgba(37,211,102,0.12);color:#25d366;border:1px solid rgba(37,211,102,0.3);border-radius:50px;padding:3px 10px;font-size:.78rem;flex-shrink:0}
-            .lead-active{border-color:rgba(37,211,102,0.45)!important;background:rgba(37,211,102,0.06)!important}
+            .lead-checkbox-text{flex:1;font-size:.84rem;color:#555;transition:.25s}
+            .trs-lead-checkbox input:checked ~ .lead-checkbox-box ~ .lead-checkbox-text{color:#222}
+            .lead-wa-badge{background:rgba(37,211,102,0.12);color:#1a9f4f;border:1px solid rgba(37,211,102,0.35);border-radius:50px;padding:3px 10px;font-size:.78rem;flex-shrink:0;font-weight:600}
+            .lead-active{border-color:rgba(37,211,102,0.5)!important;background:rgba(37,211,102,0.08)!important}
             .btn-submit-big{transition:background .3s,box-shadow .3s}
             .btn-submit-wa{background:linear-gradient(135deg,#25d366,#128c7e)!important;box-shadow:0 4px 20px rgba(37,211,102,0.35)!important}
           </style>
           <script>
           (function(){
-            const form    = document.getElementById('contactForm');
-            const cb      = document.getElementById('confirmLead');
-            const label   = document.getElementById('leadLabel');
+            const form      = document.getElementById('contactForm');
+            const cb        = document.getElementById('confirmLead');
+            const label     = document.getElementById('leadLabel');
             const submitBtn = document.getElementById('submitBtn');
             const successDiv = document.getElementById('successMsg');
 
             cb.addEventListener('change', () => {
               label.classList.toggle('lead-active', cb.checked);
               submitBtn.classList.toggle('btn-submit-wa', cb.checked);
-              if(cb.checked){
-                submitBtn.querySelector('.btn-text').innerHTML = '<i class="fa-brands fa-whatsapp me-2"></i>Send & Open WhatsApp';
-              } else {
-                submitBtn.querySelector('.btn-text').innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Send Message';
-              }
+              submitBtn.querySelector('.btn-text').innerHTML = cb.checked
+                ? '<i class="fa-brands fa-whatsapp me-2"></i>Send & Open WhatsApp'
+                : '<i class="fa-solid fa-paper-plane me-2"></i>Send Message';
             });
 
             form.addEventListener('submit', async (e) => {
@@ -192,9 +190,20 @@
               const email   = form.querySelector('[name="email"]').value.trim();
               const course  = form.querySelector('[name="course"]').value;
               const concern = form.querySelector('[name="concern"]').value.trim();
-              const isLead  = cb.checked;
+              const openWA  = cb.checked;
 
-              if(!name || !phone || !email){ alert('Please fill in Name, Phone and Email.'); return; }
+              if (!name) { alert('Please enter your full name.'); return; }
+
+              const phoneDigits = phone.replace(/\D/g, '');
+              if (!/^[6-9]\d{9}$/.test(phoneDigits)) {
+                alert('Please enter a valid 10-digit Indian mobile number (starting with 6–9).');
+                return;
+              }
+
+              if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+                alert('Please enter a valid email address.');
+                return;
+              }
 
               const btnText    = submitBtn.querySelector('.btn-text');
               const btnLoading = submitBtn.querySelector('.btn-loading');
@@ -203,11 +212,13 @@
               submitBtn.disabled = true;
 
               try {
-                await fetch('/contact', {
+                const res = await fetch('/contact', {
                   method: 'POST',
                   headers: {'Content-Type':'application/x-www-form-urlencoded'},
-                  body: new URLSearchParams({name, phone, email, course, concern, is_lead: isLead ? '1' : '0'})
+                  body: new URLSearchParams({name, phone: phoneDigits, email, course, concern, is_lead: '1'})
                 });
+                const data = await res.json();
+                if (!res.ok) { alert(data.error || 'Something went wrong. Please try again.'); return; }
 
                 form.reset();
                 label.classList.remove('lead-active');
@@ -215,13 +226,16 @@
                 successDiv.style.display = '';
                 successDiv.scrollIntoView({behavior:'smooth', block:'nearest'});
 
-                if(isLead){
-                  const txt = encodeURIComponent(
-                    'Hi, I\'m ' + name + '. I\'m interested in ' + (course || 'your courses') + '.' +
-                    (concern ? ' My concern: ' + concern + '.' : '') +
-                    ' Contact me at: ' + phone
-                  );
-                  setTimeout(() => window.open('https://wa.me/919754444450?text=' + txt, '_blank'), 400);
+                if (openWA) {
+                  const msg =
+                    'Hello! I found your contact from The Raw Studios website.\n' +
+                    '*Name:* ' + name + '\n' +
+                    '*Phone:* ' + phoneDigits + '\n' +
+                    '*Email:* ' + email + '\n' +
+                    (course ? '*Course:* ' + course + '\n' : '') +
+                    (concern ? '*Message:* ' + concern + '\n' : '') +
+                    'I would like to know more about your courses and timings. Please guide me!';
+                  setTimeout(() => window.open('https://wa.me/919754444450?text=' + encodeURIComponent(msg), '_blank'), 400);
                 }
               } catch(err) {
                 alert('Something went wrong. Please try again or call us directly.');

@@ -238,13 +238,26 @@ app.get('/api/reviews', async (req, res) => {
 });
 
 app.post('/contact', async (req, res) => {
-  const { name, email, phone, course, concern, is_lead } = req.body;
-  const isLead = is_lead === '1';
+  let { name, email, phone, course, concern } = req.body;
+
+  name    = (name    || '').trim().slice(0, 100);
+  email   = (email   || '').trim().toLowerCase().slice(0, 200);
+  phone   = (phone   || '').replace(/\D/g, '').slice(0, 15);
+  course  = (course  || '').trim().slice(0, 100);
+  concern = (concern || '').trim().slice(0, 1000);
+
+  if (!name || !phone || !email)
+    return res.status(400).json({ ok: false, error: 'Name, phone and email are required.' });
+  if (!/^[6-9]\d{9}$/.test(phone))
+    return res.status(400).json({ ok: false, error: 'Invalid phone number. Must be a 10-digit Indian mobile number.' });
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))
+    return res.status(400).json({ ok: false, error: 'Invalid email address.' });
+
   try {
     await getSupabase().from('enquiries').insert([{
       name, email, phone, course,
       message: concern || null,
-      is_lead: isLead
+      is_lead: true
     }]);
   } catch {}
   res.json({ ok: true });
