@@ -127,7 +127,7 @@ router.post('/admin/courses/:id/delete', requireAdmin, async (req, res) => {
 // ── Teachers CRUD ─────────────────────────────────────────────
 router.get('/admin/teachers', requireAdmin, async (req, res) => {
   const sb = getSupabase();
-  const { data: teachers } = await sb.from('teachers').select('*').order('id');
+  const { data: teachers } = await sb.from('teachers').select('*').order('id', { ascending: true });
   res.render('admin/teachers', { title: 'Manage Teachers — TRS', admin: req.admin, teachers: teachers || [] });
 });
 

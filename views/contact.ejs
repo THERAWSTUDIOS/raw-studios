@@ -83,7 +83,7 @@
                   <label class="trs-label">Full Name <span class="required">*</span></label>
                   <div class="trs-input-wrap">
                     <i class="fa-solid fa-user input-icon"></i>
-                    <input type="text" name="name" class="form-control trs-input-field" placeholder="Your full name" required/>
+                    <input id="trs-fname" type="text" name="name" class="form-control trs-input-field" placeholder="Your full name" required/>
                   </div>
                 </div>
               </div>
@@ -92,7 +92,7 @@
                   <label class="trs-label">Phone Number <span class="required">*</span></label>
                   <div class="trs-input-wrap">
                     <i class="fa-solid fa-phone input-icon"></i>
-                    <input type="tel" name="phone" class="form-control trs-input-field" placeholder="+91 XXXXX XXXXX" required/>
+                    <input id="trs-phone" type="tel" name="phone" class="form-control trs-input-field" placeholder="+91 XXXXX XXXXX" required/>
                   </div>
                 </div>
               </div>
@@ -101,7 +101,7 @@
                   <label class="trs-label">Email Address <span class="required">*</span></label>
                   <div class="trs-input-wrap">
                     <i class="fa-solid fa-envelope input-icon"></i>
-                    <input type="email" name="email" class="form-control trs-input-field" placeholder="you@example.com" required/>
+                    <input id="trs-email" type="email" name="email" class="form-control trs-input-field" placeholder="you@example.com" required/>
                   </div>
                 </div>
               </div>
@@ -110,7 +110,7 @@
                   <label class="trs-label">Course Interested In</label>
                   <div class="trs-input-wrap">
                     <i class="fa-solid fa-music input-icon"></i>
-                    <select name="course" class="form-control trs-input-field trs-select">
+                    <select id="trs-course" name="course" class="form-control trs-input-field trs-select">
                       <option value="">Select a course (optional)</option>
                       <option>Singing Classes</option>
                       <option>Guitar Classes</option>
@@ -134,7 +134,7 @@
                   <label class="trs-label">Your Message / Concern</label>
                   <div class="trs-input-wrap">
                     <i class="fa-solid fa-comment-dots input-icon" style="top:1rem;transform:none"></i>
-                    <textarea name="concern" class="form-control trs-input-field" placeholder="Tell us about your goals, questions, or any specific requirements…" rows="3" style="padding-top:.75rem;resize:vertical"></textarea>
+                    <textarea id="trs-concern" name="concern" class="form-control trs-input-field" placeholder="Tell us about your goals, questions, or any specific requirements…" rows="3" style="padding-top:.75rem;resize:vertical"></textarea>
                   </div>
                 </div>
               </div>
@@ -175,34 +175,34 @@
             var submitBtn  = document.getElementById('submitBtn');
             var successDiv = document.getElementById('successMsg');
 
-            /* Pre-cache DOM elements — direct reads, zero ambiguity */
-            var nameEl    = form.querySelector('input[name="name"]');
-            var phoneEl   = form.querySelector('input[name="phone"]');
-            var emailEl   = form.querySelector('input[name="email"]');
-            var courseEl  = form.querySelector('select[name="course"]');
-            var concernEl = form.querySelector('textarea[name="concern"]');
+            /* getElementById — most reliable browser API, zero edge cases */
+            var nameEl    = document.getElementById('trs-fname');
+            var phoneEl   = document.getElementById('trs-phone');
+            var emailEl   = document.getElementById('trs-email');
+            var courseEl  = document.getElementById('trs-course');
+            var concernEl = document.getElementById('trs-concern');
 
-            function showErr(fieldName, msg) {
-              var el = form.querySelector('[name="' + fieldName + '"]');
-              if (!el) return;
-              el.style.borderColor = '#e53e3e';
-              var err = form.querySelector('.trs-err-' + fieldName);
-              if (!err) {
-                err = document.createElement('p');
-                err.className = 'trs-err-' + fieldName;
-                err.style.cssText = 'color:#e53e3e;font-size:.78rem;margin:4px 0 0 4px;';
-                el.closest('.trs-input-wrap').after(err);
+            function showErr(id, refEl, msg) {
+              if (!refEl) return;
+              refEl.style.borderColor = '#e53e3e';
+              var errEl = document.getElementById('err-' + id);
+              if (!errEl) {
+                errEl = document.createElement('p');
+                errEl.id = 'err-' + id;
+                errEl.style.cssText = 'color:#e53e3e;font-size:.78rem;margin:4px 0 0 4px;';
+                refEl.closest('.trs-input-wrap').after(errEl);
               }
-              err.textContent = msg;
+              errEl.textContent = msg;
             }
-            function clearErr(fieldName) {
-              var el = form.querySelector('[name="' + fieldName + '"]');
-              if (el) el.style.borderColor = '';
-              var errEl = form.querySelector('.trs-err-' + fieldName);
+            function clearErr(id, refEl) {
+              if (refEl) refEl.style.borderColor = '';
+              var errEl = document.getElementById('err-' + id);
               if (errEl) errEl.textContent = '';
             }
             function clearAllErr() {
-              ['name','phone','email'].forEach(clearErr);
+              clearErr('name',  nameEl);
+              clearErr('phone', phoneEl);
+              clearErr('email', emailEl);
             }
 
             cb.addEventListener('change', function() {
@@ -218,7 +218,7 @@
               e.stopPropagation();
               clearAllErr();
 
-              /* Read directly from DOM — avoids window.name / FormData edge cases */
+              /* Read by ID — zero ambiguity */
               var fullName   = nameEl    ? nameEl.value.trim()    : '';
               var rawPhone   = phoneEl   ? phoneEl.value.trim()   : '';
               var emailVal   = emailEl   ? emailEl.value.trim()   : '';
@@ -226,27 +226,24 @@
               var concernVal = concernEl ? concernEl.value.trim() : '';
               var openWA     = cb.checked;
 
-              /* ── Validate ── */
+              /* ── Validate — hard stop before ANY async code ── */
               var valid = true;
               if (!fullName) {
-                showErr('name', 'Full name is required.');
+                showErr('name', nameEl, 'Full name is required.');
                 valid = false;
               }
-
               var phoneDigits = rawPhone.replace(/\D/g, '');
               if (!phoneDigits || !/^[6-9]\d{9}$/.test(phoneDigits)) {
-                showErr('phone', 'Enter a valid 10-digit Indian mobile number (starts with 6–9).');
+                showErr('phone', phoneEl, 'Enter a valid 10-digit Indian mobile number (starts with 6–9).');
                 valid = false;
               }
-
               if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal)) {
-                showErr('email', 'Enter a valid email address.');
+                showErr('email', emailEl, 'Enter a valid email address.');
                 valid = false;
               }
+              if (!valid) return;
 
-              if (!valid) return; /* ← hard stop — WhatsApp never opens on bad input */
-
-              /* ── Build WhatsApp message BEFORE fetch/reset ── */
+              /* ── Build WA message here — values locked in, form not yet reset ── */
               var waMsg = openWA
                 ? 'Hello! I found your contact from The Raw Studios website.\n' +
                   '*Name:* ' + fullName + '\n' +
@@ -256,6 +253,9 @@
                   (concernVal ? '*Message:* ' + concernVal + '\n' : '') +
                   'I would like to know more about your courses and timings. Please guide me!'
                 : null;
+
+              /* ── Pre-open blank tab NOW (sync, near user gesture = no popup block) ── */
+              var waTab = (openWA && waMsg) ? window.open('', '_blank') : null;
 
               var btnText    = submitBtn.querySelector('.btn-text');
               var btnLoading = submitBtn.querySelector('.btn-loading');
@@ -274,7 +274,8 @@
                 });
                 var data = await res.json();
                 if (!res.ok) {
-                  showErr('name', data.error || 'Something went wrong. Please try again.');
+                  if (waTab) waTab.close();
+                  showErr('name', nameEl, data.error || 'Something went wrong. Please try again.');
                   return;
                 }
 
@@ -282,16 +283,17 @@
                 clearAllErr();
                 label.classList.remove('lead-active');
                 submitBtn.classList.remove('btn-submit-wa');
+                successDiv.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i>We received your enquiry, <strong>' + fullName + '</strong>! Our team will reach out to you on WhatsApp shortly.';
                 successDiv.style.display = '';
                 successDiv.scrollIntoView({behavior: 'smooth', block: 'nearest'});
 
-                if (openWA && waMsg) {
-                  setTimeout(function() {
-                    window.open('https://wa.me/919754444450?text=' + encodeURIComponent(waMsg), '_blank');
-                  }, 400);
+                /* Navigate pre-opened tab to WA — never blocked */
+                if (waTab && waMsg) {
+                  waTab.location = 'https://wa.me/919754444450?text=' + encodeURIComponent(waMsg);
                 }
               } catch (fetchErr) {
-                showErr('name', 'Something went wrong. Please try again or call us directly.');
+                if (waTab) waTab.close();
+                showErr('name', nameEl, 'Something went wrong. Please try again or call us directly.');
               } finally {
                 btnText.style.display    = '';
                 btnLoading.style.display = 'none';

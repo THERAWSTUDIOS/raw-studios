@@ -33,7 +33,7 @@ async function getCourses() {
 async function getTeachers() {
   try {
     const { data } = await getSupabase()
-      .from('teachers').select('*').eq('is_active', true).order('sort_order');
+      .from('teachers').select('*').eq('is_active', true).order('id', { ascending: true });
     return (data || []).map(t => ({
       ...t,
       tagsArray: (t.tags || '').split(',').map(s => s.trim()).filter(Boolean)
@@ -194,18 +194,33 @@ app.get('/', async (req, res) => {
   const [reviews, courses, teachers, gallery] = await Promise.all([
     fetchGoogleReviews(), getCourses(), getTeachers(), getGallery()
   ]);
-  res.render('index', { title:'The Raw Studios — Music & Dance Academy', reviews, courses: courses.slice(0,4), teachers, gallery, live: isLive() });
+  res.render('index', {
+    title: 'The Raw Studios — Music & Dance Academy in Zirakpur, Punjab',
+    description: 'The Raw Studios is a premier music and dance academy in Zirakpur, Punjab. Join courses in Singing, Guitar, Piano, Kathak, Bhangra and more. Book a free trial lesson today!',
+    canonical: 'https://therawstudios.in',
+    ogImage: 'https://therawstudios.in/images/logo.png',
+    reviews, courses: courses.slice(0,4), teachers, gallery, live: isLive()
+  });
 });
 
 app.get('/courses', async (req, res) => {
   const courses = await getCourses();
-  res.render('courses', { title:'Our Courses — The Raw Studios', courses });
+  res.render('courses', {
+    title: 'Music & Dance Courses — The Raw Studios Zirakpur',
+    description: 'Explore Singing, Guitar, Piano, Kathak, Bhangra and more at The Raw Studios in Zirakpur, Punjab. Professional courses for all ages and skill levels.',
+    canonical: 'https://therawstudios.in/courses',
+    ogImage: 'https://therawstudios.in/images/logo.png',
+    courses
+  });
 });
 
 app.get('/label', async (req, res) => {
   const videos = await getLabelVideos();
   res.render('label', {
-    title: 'Label & Performances — The Raw Studios',
+    title: 'Videos & Performances — The Raw Studios',
+    description: 'Watch live performances, student showcases, reels, and studio recordings from The Raw Studios — Zirakpur\'s top music and dance academy.',
+    canonical: 'https://therawstudios.in/label',
+    ogImage: 'https://therawstudios.in/images/logo.png',
     liveVideos:     videos.filter(v => v.type === 'live'),
     recordedVideos: videos.filter(v => v.type === 'recorded'),
   });
@@ -213,12 +228,24 @@ app.get('/label', async (req, res) => {
 
 app.get('/about', async (req, res) => {
   const [reviews, teachers] = await Promise.all([fetchGoogleReviews(), getTeachers()]);
-  res.render('about', { title:'About Us — The Raw Studios', reviews, teachers, live: isLive() });
+  res.render('about', {
+    title: 'About Us — The Raw Studios Zirakpur',
+    description: 'Meet the founders and team behind The Raw Studios — Rounak Singh and Sneha Kaur. A community-driven music and dance academy in Zirakpur, Punjab.',
+    canonical: 'https://therawstudios.in/about',
+    ogImage: 'https://therawstudios.in/images/logo.png',
+    reviews, teachers, live: isLive()
+  });
 });
 
 app.get('/contact', (req, res) => {
   res.set('Cache-Control', 'no-store');
-  res.render('contact', { title:'Contact Us — The Raw Studios', success:null, error:null });
+  res.render('contact', {
+    title: 'Contact Us — The Raw Studios Zirakpur',
+    description: 'Get in touch with The Raw Studios in Zirakpur, Punjab. Call, WhatsApp, or visit us to book a free trial music or dance lesson today.',
+    canonical: 'https://therawstudios.in/contact',
+    ogImage: 'https://therawstudios.in/images/logo.png',
+    success: null, error: null
+  });
 });
 
 // ─── API: list image files in public/images/ ─────────────────
