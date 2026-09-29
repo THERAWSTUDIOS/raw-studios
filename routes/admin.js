@@ -7,6 +7,26 @@ const { getSupabase } = require('../lib/supabase');
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
+// Login brute-force guard — none existed before. In-memory per-IP window is
+// fine for a single-instance deploy; resets on cold start, which only makes
+// it more lenient, never less safe.
+const loginAttempts = new Map();
+function loginRateLimit(req, res, next) {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress;
+  const now = Date.now();
+  const windowMs = 15 * 60 * 1000;
+  const entry = loginAttempts.get(ip);
+  if (entry && now - entry.start < windowMs) {
+    if (entry.count >= 8) {
+      return res.status(429).render('admin/login', { title: 'Admin Login — TRS', error: 'Too many attempts. Try again later.' });
+    }
+    entry.count++;
+  } else {
+    loginAttempts.set(ip, { start: now, count: 1 });
+  }
+  next();
+}
+
 // ── Image uploads → Supabase Storage ─────────────────────────
 async function uploadToStorage(bucket, file) {
   const ext  = file.originalname.split('.').pop().toLowerCase();
@@ -44,7 +64,7 @@ router.get('/trstestrounak', (req, res) => {
   res.render('admin/login', { title: 'Admin Login — TRS', error });
 });
 
-router.post('/trstestrounak', async (req, res) => {
+router.post('/trstestrounak', loginRateLimit, async (req, res) => {
   const { username, password } = req.body;
   try {
     const sb = getSupabase();
@@ -64,7 +84,7 @@ router.post('/trstestrounak', async (req, res) => {
     }
 
     const token = signToken({ id: user.id, username: user.username });
-    res.cookie('trs_admin', token, { httpOnly: true, maxAge: 8 * 60 * 60 * 1000, sameSite: 'strict' });
+    res.cookie('trs_admin', token, { httpOnly: true, maxAge: 8 * 60 * 60 * 1000, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' });
     res.redirect('/admin');
   } catch (err) {
     res.render('admin/login', { title: 'Admin Login — TRS', error: 'Server error — ' + err.message });
